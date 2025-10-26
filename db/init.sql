@@ -62,7 +62,7 @@ CREATE TABLE product (
     availability_status VARCHAR(30) DEFAULT 'In stock' CHECK (availability_status in ('In stock', 'Out of stock')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    discount_precent NUMERIC(5,2) DEFAULT 0.0
+    discount_percent NUMERIC(5,2) DEFAULT 0.0
 );
 
 -- ==================================================

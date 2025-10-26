@@ -12,11 +12,11 @@ class Product {
       stock,
       img,
       availability_status,
-      discount_precent,
+      discount_percent,
     } = data;
 
     const statement = `
-            INSERT INTO product (userid, categoryid, title, p_description, price, stock, img, availability_status, discount_precent)
+            INSERT INTO product (userid, categoryid, title, p_description, price, stock, img, availability_status, discount_percent)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
             RETURNING *
         `;
@@ -29,7 +29,7 @@ class Product {
       stock,
       img,
       availability_status,
-      discount_precent,
+      discount_percent,
     ];
     const { rows } = await db.query(statement, values);
     return rows[0];
