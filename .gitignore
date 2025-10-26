@@ -1,0 +1,6 @@
+.env 
+package-lock.json 
+package.json 
+/db/db.sql
+/db/init.js 
+node_modules/
