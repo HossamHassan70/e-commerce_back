@@ -3,7 +3,7 @@ Begin;
 -- ==================================================
 -- USERS TABLE
 -- ==================================================
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     userid SERIAL PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE users (
 -- ==================================================
 -- ADDRESS TABLE
 -- ==================================================
-CREATE TABLE address (
+CREATE TABLE IF NOT EXISTS address (
     addressid SERIAL PRIMARY KEY,
     userid INT REFERENCES users(userid) ON DELETE CASCADE,
     country VARCHAR(100) NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE address (
 -- ==================================================
 -- CREDIT TABLE
 -- ==================================================
-CREATE TABLE credit (
+CREATE TABLE IF NOT EXISTS credit (
     creditid SERIAL PRIMARY KEY,
     userid INT REFERENCES users(userid) ON DELETE CASCADE,
     card_num VARCHAR(50) UNIQUE NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE credit (
 -- ==================================================
 -- CATEGORY TABLE
 -- ==================================================
-CREATE TABLE category (
+CREATE TABLE IF NOT EXISTS category (
     categoryid SERIAL PRIMARY KEY,
     name VARCHAR(100)  
 );
@@ -50,7 +50,7 @@ CREATE TABLE category (
 -- ==================================================
 -- PRODUCT TABLE
 -- ==================================================
-CREATE TABLE product (
+CREATE TABLE IF NOT EXISTS product (
     productid SERIAL PRIMARY KEY,
     userid INT REFERENCES users(userid) ON DELETE CASCADE,
     categoryid INT REFERENCES category(categoryid) ON DELETE CASCADE,
@@ -68,7 +68,7 @@ CREATE TABLE product (
 -- ==================================================
 -- REVIEWS TABLE
 -- ==================================================
-CREATE TABLE review (
+CREATE TABLE IF NOT EXISTS review (
     reviewid SERIAL PRIMARY KEY,
     userid INT REFERENCES users(userid) ON DELETE CASCADE,
     productid INT REFERENCES product(productid) ON DELETE CASCADE,
@@ -80,7 +80,7 @@ CREATE TABLE review (
 -- ==================================================
 -- CART TABLE
 -- ==================================================
-CREATE TABLE cart (
+CREATE TABLE IF NOT EXISTS cart (
     cartid SERIAL PRIMARY KEY,
     userid INT REFERENCES users(userid) ON DELETE CASCADE,
     productid INT REFERENCES product(productid) ON DELETE CASCADE,
@@ -90,7 +90,7 @@ CREATE TABLE cart (
 -- ==================================================
 -- FAVLIST TABLE
 -- ==================================================
-CREATE TABLE favlist (
+CREATE TABLE IF NOT EXISTS favlist (
     userid INT REFERENCES users(userid) ON DELETE CASCADE,
     productid INT REFERENCES product(productid) ON DELETE CASCADE,
     PRIMARY KEY (userid, productid)
@@ -99,7 +99,7 @@ CREATE TABLE favlist (
 -- ==================================================
 -- PAYMENT TABLE
 -- ==================================================
-CREATE TABLE payment (
+CREATE TABLE IF NOT EXISTS payment (
     paymentid SERIAL PRIMARY KEY,
     userid INT REFERENCES users(userid) ON DELETE CASCADE,
     orderid INT,
@@ -110,7 +110,7 @@ CREATE TABLE payment (
 -- ==================================================
 -- ORDERS TABLE
 -- ==================================================
-CREATE TABLE orders (
+CREATE TABLE IF NOT EXISTS orders (
     orderid SERIAL PRIMARY KEY,
     userid INT REFERENCES users(userid) ON DELETE CASCADE,
     order_status VARCHAR(50), -- paid, refunded, failed
