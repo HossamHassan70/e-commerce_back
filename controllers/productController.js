@@ -3,18 +3,30 @@ const asyncHandler = require("express-async-handler");
 
 // @desc    Get all products
 // @route   GET  /api/products
-// @access  Visitor/Buyer/Seller
-exports.getAllProducts = asyncHandler(async (req, res) => {
-  const products = await Product.getAll();
+// @access  All
+exports.getAllProducts = asyncHandler(async (req, res, next) => {
+  const filters = {
+    title: req.query.title,
+    categoryid: req.query.categoryid,
+    availability_status: req.query.availability,
+    discount_percent: req.query.discount,
+  };
+
+  const products = await Product.getAll(filters);
+
+  if (!products) {
+    throw new Error("No Product Found");
+  }
   res.status(200).json({
     status: "success",
+    length: products.length,
     products,
   });
 });
 
 // @desc    Get A product By ID
 // @route   GET  /api/products/:id
-// @access  Visitor/Buyer/Seller
+// @access  All
 exports.getProduct = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const product = await Product.findById(id);
@@ -62,7 +74,7 @@ exports.updateProduct = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Delete product By id
-// @route   DELETE  /api/v1/products
+// @route   DELETE  /api/products
 // @access  Seller
 exports.deleteProduct = asyncHandler(async (req, res, next) => {
   userid = req.user.userid;

@@ -36,11 +36,42 @@ class Product {
   }
 
   // @desc GET ALL PRODUCT
-  static async getAll() {
-    const statement = `
-            SELECT * FROM product
+  static async getAll(filters = {}) {
+    let statement = `
+            SELECT p.categoryid, p.title, p.p_description, p.price, p.stock, p.img, p.availability_status, p.discount_percent, c.name
+            FROM product p
+            INNER JOIN category c ON p.categoryid = c.categoryid
+            WHERE 1=1
         `;
-    const { rows } = await db.query(statement);
+    let values = [];
+    let index = 1;
+
+    if (filters.categoryid) {
+      statement += ` AND p.categoryid = $${index++}`;
+      values.push(filters.categoryid);
+    }
+
+    if (filters.title) {
+      statement += ` AND LOWER(p.title) LIKE LOWER($${index++})`;
+      values.push(`%${filters.title}%`);
+    }
+
+    if (filters.availability_status) {
+      statement += ` AND LOWER(p.availability_status) = LOWER($${index++})`;
+      values.push(filters.availability_status);
+    }
+
+    if (filters.discount_percent === "true") {
+      statement += ` AND p.discount_percent > 0`;
+    }
+
+    if (filters.discount_percent === "false") {
+      statement += ` AND p.discount_percent = 0`;
+    }
+    
+    statement += ` ORDER BY p.updated_at DESC`;
+
+    const { rows } = await db.query(statement, values);
     return rows;
   }
 

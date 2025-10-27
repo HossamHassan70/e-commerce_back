@@ -4,3 +4,5 @@ package.json
 /db/db.sql
 /db/init.js 
 node_modules/
+ecommerce.drawio.pdf
+ecommerce.drawio
