@@ -17,6 +17,7 @@ exports.getAllProducts = asyncHandler(async (req, res, next) => {
   if (!products) {
     throw new Error("No Product Found");
   }
+  
   res.status(200).json({
     status: "success",
     length: products.length,
