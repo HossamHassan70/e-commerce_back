@@ -1,4 +1,4 @@
-.env 
+.env
 /db/db.sql
 /db/init.js 
 node_modules/
