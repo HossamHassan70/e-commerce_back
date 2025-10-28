@@ -40,7 +40,7 @@ class Product {
     let statement = `
             SELECT p.categoryid, p.title, p.p_description, p.price, p.stock, p.img, p.availability_status, p.discount_percent, c.name
             FROM product p
-            INNER JOIN category c ON p.categoryid = c.categoryid
+            FULL JOIN category c ON p.categoryid = c.categoryid
             WHERE 1=1
         `;
     let values = [];
@@ -68,7 +68,7 @@ class Product {
     if (filters.discount_percent === "false") {
       statement += ` AND p.discount_percent = 0`;
     }
-    
+
     statement += ` ORDER BY p.updated_at DESC`;
 
     const { rows } = await db.query(statement, values);
