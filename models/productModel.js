@@ -38,7 +38,7 @@ class Product {
   // @desc GET ALL PRODUCT
   static async getAll(filters = {}) {
     let statement = `
-            SELECT p.categoryid, p.title, p.p_description, p.price, p.stock, p.img, p.availability_status, p.discount_percent, c.name
+            SELECT p.productid, p.categoryid, p.title, p.p_description, p.price, p.stock, p.img, p.availability_status, p.discount_percent, c.name
             FROM product p
             FULL JOIN category c ON p.categoryid = c.categoryid
             WHERE 1=1
@@ -61,11 +61,11 @@ class Product {
       values.push(filters.availability_status);
     }
 
-    if (filters.discount_percent === "true") {
+    if (filters.discount_percent === true) {
       statement += ` AND p.discount_percent > 0`;
     }
 
-    if (filters.discount_percent === "false") {
+    if (filters.discount_percent === false) {
       statement += ` AND p.discount_percent = 0`;
     }
 

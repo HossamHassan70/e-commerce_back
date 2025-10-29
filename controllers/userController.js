@@ -50,11 +50,17 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+  // IF USER DOES NOT WRITE (email/password) IN INPUT FIELDS
+  if (!email || !password) {
+    res.status(400);
+    throw new Error("Invalid email or password");
+  }
 
+  // IF USER DOES EXIST
   const user = await findUserByEmail(email);
   if (!user) {
     res.status(400);
-    throw new Error("Invalid email or password");
+    throw new Error("User Does not Exist, Please Signup");
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
