@@ -41,4 +41,14 @@ const protect = asyncHandler(async (req, res, next) => {
   }
 });
 
-module.exports = { protect };
+const allowedTo = (...roles) => {
+  return asyncHandler(async (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      res.status(403);
+      throw new Error("User is Not Authorized for this Service");
+    }
+    next();
+  });
+};
+
+module.exports = { protect, allowedTo };

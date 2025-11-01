@@ -8,9 +8,8 @@ router.route("/").get(productController.getAllProducts);
 router.route("/:id").get(productController.getProduct);
 
 // Seller
-// router.use(authController.allowedTo("seller"));
-
 router.use(authController.protect);
+router.use(authController.allowedTo("seller"));
 router.post("/", productController.createNewProduct);
 router
   .route("/:id")

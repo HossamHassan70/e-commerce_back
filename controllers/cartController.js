@@ -9,7 +9,7 @@ exports.getCart = asyncHandler(async (req, res, next) => {
   const cart = await Cart.get(userid);
 
   if (cart.length === 0) {
-    res.status(200).json({ message: "Cart is EMpty" });
+    res.status(200).json({ message: "Cart is Empty" });
   }
 
   res.status(200).json({
@@ -23,6 +23,15 @@ exports.getCart = asyncHandler(async (req, res, next) => {
 exports.addToCart = asyncHandler(async (req, res, next) => {
   const userid = req.user.userid;
   const { productid, quantity } = req.body;
+
+  if (
+    req.user.role === "seller" &&
+    (await Cart.checkOwner(userid, productid))
+  ) {
+    res.status(201).json({
+      message: "This Product is Owned By Current User",
+    });
+  }
 
   const cartItem = await Cart.addOrUpdate(userid, productid, quantity);
 

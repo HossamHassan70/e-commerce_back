@@ -17,7 +17,7 @@ exports.getAllProducts = asyncHandler(async (req, res, next) => {
   if (!products) {
     throw new Error("No Product Found");
   }
-  
+
   res.status(200).json({
     status: "success",
     length: products.length,
@@ -57,7 +57,7 @@ exports.createNewProduct = asyncHandler(async (req, res, next) => {
 // @route   PATCH  /api/products/:id
 // @access  Seller
 exports.updateProduct = asyncHandler(async (req, res, next) => {
-  userid = req.user.userid;
+  const userid = req.user.userid;
   const { id } = req.params;
   const product = await Product.findById(id);
   if (!product) {
@@ -78,7 +78,7 @@ exports.updateProduct = asyncHandler(async (req, res, next) => {
 // @route   DELETE  /api/products
 // @access  Seller
 exports.deleteProduct = asyncHandler(async (req, res, next) => {
-  userid = req.user.userid;
+  const userid = req.user.userid;
   const { id } = req.params;
   const product = await Product.findById(id);
   if (!product) {
@@ -87,7 +87,9 @@ exports.deleteProduct = asyncHandler(async (req, res, next) => {
   const deletedProduct = await Product.findByIdAndDelete(id, userid);
 
   if (!deletedProduct) {
-    throw new Error("User is Not Authorized to Update this product");
+    throw new Error("User is Not Authorized to Delete this product");
   }
-  res.status(204);
+  res.status(200).json({
+    message: "Product successfully Removed",
+  });
 });

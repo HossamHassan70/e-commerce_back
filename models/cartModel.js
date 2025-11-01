@@ -1,4 +1,5 @@
 const db = require("../db/pool");
+const { trace } = require("../routes/cartRouter");
 
 class Cart {
   // @desc GET USER CART
@@ -11,6 +12,16 @@ class Cart {
         `;
     const { rows } = await db.query(statement, [userid]);
     return rows;
+  }
+
+  // @desc CHECK IF PRODUCT BELONGS TO SELLER
+  static async checkOwner(userid, productid) {
+    const productOwnership = await db.query(
+      `SELECT p.productid FROM product p JOIN users u ON p.userid = u.userid WHERE u.userid = $1 AND p.productid = $2 `,
+      [userid, productid]
+    );
+    if (productOwnership.rows.length > 0) return true;
+    return false;
   }
 
   // @desc ADD OR INC QUANTITY TO CART
