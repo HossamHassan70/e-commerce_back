@@ -1,19 +1,30 @@
-const express = require("express");
-const dotenv = require("dotenv");
-const productRouter = require("./routes/productRouter");
-const userRoutes = require("./routes/userRoutes");
-const orderRoutes = require("./routes/orderRoutes");
+process.on('uncaughtException', err => {
+  console.error(' Uncaught Error:', err);
+});
+
+const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
-const initDB = require("./db/initDB");
-dotenv.config({ path: "./.env" });
-const port = process.env.PORT;
+const PORT = 3000;
 
-app.use(express.json());
+app.use(bodyParser.json());
 
-app.use("/api/products", productRouter);
-app.use("/api/users", userRoutes);
-app.use("/api/orders", orderRoutes);
+const pool = require('./db');
 
-app.listen(port, () => {
-  console.log("server running port 3000");
+// ✅ Imports (بدون .default)
+const reviewRoutes = require('./routes/review');
+const addressRoutes = require('./routes/address');
+const categoryRoutes = require('./routes/category');
+
+// ✅ Routes
+app.use('/reviews', reviewRoutes);
+app.use('/', addressRoutes);
+app.use('/categories', categoryRoutes);
+
+app.get('/', (req, res) => {
+  res.send('API IS running successfully ');
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
