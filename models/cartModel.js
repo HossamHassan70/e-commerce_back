@@ -67,7 +67,7 @@ class Cart {
 
     const currentQnt = productInCart.rows[0].quantity;
     const newQnt = currentQnt - quantity;
-    if (currentQnt <= 0) {
+    if (newQnt <= 0 ) {
       await db.query(
         `DELETE FROM cart WHERE userid = $1 AND productid = $2 RETURNING *`,
         [userid, productid]
