@@ -10,7 +10,7 @@ const createOrder = async (
     `INSERT INTO orders (userid, order_status, total_amount, shipping_fee)
      VALUES ($1, $2, $3, $4)
      RETURNING *`,
-    [userid, order_status || "paid", total_amount, shipping_fee]
+    [userid, order_status, total_amount, shipping_fee]
   );
   return result.rows[0];
 };
@@ -20,31 +20,56 @@ const getAllOrders = async () => {
   return result.rows;
 };
 
-const getOrderById = async (id) => {
+const getOrderById = async (orderid) => {
   const result = await pool.query(`SELECT * FROM orders WHERE orderid = $1`, [
-    id,
+    orderid,
   ]);
   return result.rows[0];
 };
 
-const updateOrder = async (id, fields) => {
-  const { order_status, total_amount, shipping_fee } = fields;
+const getOrdersByUserId = async (userid) => {
   const result = await pool.query(
-    `UPDATE orders
+    `SELECT * FROM orders WHERE userid = $1 ORDER BY created_at DESC`,
+    [userid]
+  );
+  return result.rows;
+};
+
+const updateOrder = async (orderid, data) => {
+  const { order_status, total_amount, shipping_fee } = data;
+  const result = await pool.query(
+    `UPDATE orders 
      SET order_status = COALESCE($1, order_status),
          total_amount = COALESCE($2, total_amount),
-         shipping_fee = COALESCE($3, shipping_fee)
+         shipping_fee = COALESCE($3, shipping_fee),
+         updated_at = CURRENT_TIMESTAMP
      WHERE orderid = $4
      RETURNING *`,
-    [order_status, total_amount, shipping_fee, id]
+    [order_status, total_amount, shipping_fee, orderid]
   );
   return result.rows[0];
 };
 
-const deleteOrder = async (id) => {
+const changeOrderStatus = async (orderid, newStatus) => {
+  const validStatuses = ["pending", "completed", "canceled"];
+  if (!validStatuses.includes(newStatus)) {
+    throw new Error("Invalid order status");
+  }
+
+  const result = await pool.query(
+    `UPDATE orders 
+     SET order_status = $1, updated_at = CURRENT_TIMESTAMP 
+     WHERE orderid = $2
+     RETURNING *`,
+    [newStatus, orderid]
+  );
+  return result.rows[0];
+};
+
+const deleteOrder = async (orderid) => {
   const result = await pool.query(
     `DELETE FROM orders WHERE orderid = $1 RETURNING *`,
-    [id]
+    [orderid]
   );
   return result.rows[0];
 };
@@ -53,6 +78,8 @@ module.exports = {
   createOrder,
   getAllOrders,
   getOrderById,
+  getOrdersByUserId,
   updateOrder,
+  changeOrderStatus,
   deleteOrder,
 };

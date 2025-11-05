@@ -3,7 +3,9 @@ const {
   createOrder,
   getAllOrders,
   getOrderById,
+  getOrdersByUserId,
   updateOrder,
+  changeOrderStatus,
   deleteOrder,
 } = require("../models/orderModel");
 
@@ -17,45 +19,59 @@ const createNewOrder = asyncHandler(async (req, res) => {
 
   const order = await createOrder(
     req.user.userid,
-    "paid",
+    "pending",
     total_amount,
     shipping_fee || 0
   );
+
   res.status(201).json({ message: "Order created successfully", order });
 });
 
 const getOrders = asyncHandler(async (req, res) => {
-  if (req.user.role == "buyer") {
+  if (req.user.role !== "admin") {
     res.status(403);
-    throw new Error(
-      "Access denied: only admin and sellers can view all orders"
-    );
+    throw new Error("Access denied: only admin can view all orders");
   }
 
   const orders = await getAllOrders();
   res.status(200).json(orders);
 });
 
-const getOrder = asyncHandler(async (req, res) => {
-  const order = await getOrderById(req.params.id);
+// const getOrder = asyncHandler(async (req, res) => {
+//   const order = await getOrderById(req.params.id);
 
-  if (!order) {
-    res.status(404);
-    throw new Error("Order not found");
+//   if (!order) {
+//     res.status(404);
+//     throw new Error("Order not found");
+//   }
+
+//   if (req.user.role === "buyer" && order.userid !== req.user.userid) {
+//     res.status(403);
+//     throw new Error("Access denied: cannot view this order");
+//   }
+
+//   res.status(200).json(order);
+// });
+
+const getUserOrders = asyncHandler(async (req, res) => {
+  // if (req.user.role !== "buyer") {
+  //   res.status(403);
+  //   throw new Error("Access denied: only buyers can view their orders");
+  // }
+
+  const orders = await getOrdersByUserId(req.user.userid);
+
+  if (!orders.length) {
+    return res.status(200).json({ message: "No orders found for this user" });
   }
 
-  if (req.user.role == "buyer" && order.userid !== req.user.userid) {
-    res.status(403);
-    throw new Error("Access denied: cannot view this order");
-  }
-
-  res.status(200).json(order);
+  res.status(200).json(orders);
 });
 
 const updateOrderById = asyncHandler(async (req, res) => {
-  if (req.user.role !== "seller") {
+  if (req.user.role !== "admin") {
     res.status(403);
-    throw new Error("Access denied: only sellers can update orders");
+    throw new Error("Access denied: only admin can update orders");
   }
 
   const updated = await updateOrder(req.params.id, req.body);
@@ -67,10 +83,33 @@ const updateOrderById = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Order updated successfully", updated });
 });
 
+const changeStatus = asyncHandler(async (req, res) => {
+  const { status } = req.body;
+
+  // if (req.user.role !== "admin") {
+  //   res.status(403);
+  //   throw new Error("Access denied: only admin can change order status");
+  // }
+
+  if (!status) {
+    res.status(400);
+    throw new Error("Status is required");
+  }
+
+  const updated = await changeOrderStatus(req.params.id, status);
+
+  if (!updated) {
+    res.status(404);
+    throw new Error("Order not found");
+  }
+
+  res.status(200).json({ message: "Order status updated", updated });
+});
+
 const deleteOrderById = asyncHandler(async (req, res) => {
-  if (req.user.role !== "seller") {
+  if (req.user.role !== "admin") {
     res.status(403);
-    throw new Error("Access denied: only sellers can delete orders");
+    throw new Error("Access denied: only admin can delete orders");
   }
 
   const deleted = await deleteOrder(req.params.id);
@@ -85,7 +124,9 @@ const deleteOrderById = asyncHandler(async (req, res) => {
 module.exports = {
   createNewOrder,
   getOrders,
-  getOrder,
+  // getOrder,
+  getUserOrders,
   updateOrderById,
+  changeStatus,
   deleteOrderById,
 };
