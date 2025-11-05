@@ -9,6 +9,7 @@ const favlistRouter = require("./routes/favlistRouter");
 const reviewRoutes = require("./routes/review");
 const addressRoutes = require("./routes/address");
 const categoryRoutes = require("./routes/category");
+const orderRouter = require("./routes/orderRoutes");
 const initDB = require("./db/initDB");
 dotenv.config({ path: "./.env" });
 
@@ -26,6 +27,7 @@ app.use("/api/favlist", favlistRouter);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/address", addressRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/orders", orderRouter);
 
 app.listen(port, () => {
   console.log("server running port 3000");

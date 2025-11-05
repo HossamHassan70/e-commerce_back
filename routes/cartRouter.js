@@ -5,7 +5,7 @@ const authController = require("../middleware/authMiddleware");
 
 // Buyer/Seller
 router.use(authController.protect);
-router.use(authController.allowedTo("buyer", "seller"));
+// router.use(authController.allowedTo("buyer", "seller"));
 router
   .route("/")
   .get(cartController.getCart)
