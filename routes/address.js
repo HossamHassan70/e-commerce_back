@@ -105,7 +105,7 @@ router.delete("/:addressid", async (req, res) => {
   try {
     const { addressid } = req.params;
     const result = await pool.query(
-      "DELETE FROM address WHERE addressid = $1 AND userid = $1 RETURNING *",
+      "DELETE FROM address WHERE addressid = $1 AND userid = $2 RETURNING *",
       [addressid, userid]
     );
 

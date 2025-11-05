@@ -141,7 +141,7 @@ router.put(
 // delete review by userid + productid
 router.delete(
   "/:reviewid",
-  authController.allowedTo("admin", "byuer", "seller"),
+  authController.allowedTo("admin", "buyer", "seller"),
   async (req, res) => {
     try {
       const userid = req.user.userid;
