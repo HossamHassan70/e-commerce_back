@@ -18,7 +18,7 @@ router.post("/", async (req, res) => {
       [name]
     );
 
-    res.json({
+    res.status(200).json({
       message: "Category added successfully.",
       category: result.rows[0],
     });
@@ -34,7 +34,7 @@ router.get("/", async (req, res) => {
     const result = await pool.query(
       "SELECT * FROM category ORDER BY categoryid ASC"
     );
-    res.json(result.rows);
+    res.status(200).json(result.rows);
   } catch (err) {
     console.error("Error fetching categories:", err);
     res.status(500).json({ error: "Server error" });
@@ -56,7 +56,7 @@ router.put("/:categoryid", async (req, res) => {
       return res.status(404).json({ message: "Category not found." });
     }
 
-    res.json({
+    res.status(200).json({
       message: "Category updated successfully.",
       category: result.rows[0],
     });
@@ -80,7 +80,7 @@ router.delete("/:categoryid", async (req, res) => {
       return res.status(404).json({ message: "Category not found." });
     }
 
-    res.json({ message: "Category deleted successfully." });
+    res.status(200).json({ message: "Category deleted successfully." });
   } catch (err) {
     console.error("Error deleting category:", err);
     res.status(500).json({ error: "Server error" });

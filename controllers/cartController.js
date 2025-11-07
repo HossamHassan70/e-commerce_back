@@ -28,7 +28,7 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
     req.user.role === "seller" &&
     (await Cart.checkOwner(userid, productid))
   ) {
-    res.status(201).json({
+    res.status(401).json({
       message: "This Product is Owned By Current User",
     });
   }

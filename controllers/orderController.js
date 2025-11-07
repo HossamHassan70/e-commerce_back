@@ -68,20 +68,20 @@ const getUserOrders = asyncHandler(async (req, res) => {
   res.status(200).json(orders);
 });
 
-const updateOrderById = asyncHandler(async (req, res) => {
-  if (req.user.role !== "admin") {
-    res.status(403);
-    throw new Error("Access denied: only admin can update orders");
-  }
+// const updateOrderById = asyncHandler(async (req, res) => {
+//   if (req.user.role !== "admin") {
+//     res.status(403);
+//     throw new Error("Access denied: only admin can update orders");
+//   }
 
-  const updated = await updateOrder(req.params.id, req.body);
-  if (!updated) {
-    res.status(404);
-    throw new Error("Order not found");
-  }
+//   const updated = await updateOrder(req.params.id, req.body);
+//   if (!updated) {
+//     res.status(404);
+//     throw new Error("Order not found");
+//   }
 
-  res.status(200).json({ message: "Order updated successfully", updated });
-});
+//   res.status(200).json({ message: "Order updated successfully", updated });
+// });
 
 const changeStatus = asyncHandler(async (req, res) => {
   const { status } = req.body;
@@ -126,7 +126,7 @@ module.exports = {
   getOrders,
   // getOrder,
   getUserOrders,
-  updateOrderById,
+  // updateOrderById,
   changeStatus,
   deleteOrderById,
 };

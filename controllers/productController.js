@@ -66,7 +66,9 @@ exports.updateProduct = asyncHandler(async (req, res, next) => {
   const updatedProduct = await Product.findByIdAndUpdate(id, userid, req.body);
 
   if (!updatedProduct) {
-    throw new Error("User is Not Authorized to Update this product");
+    res
+      .status(401)
+      .json({ message: "User is Not Authorized to Update this product" });
   }
   res.status(201).json({
     status: "success",
@@ -87,7 +89,9 @@ exports.deleteProduct = asyncHandler(async (req, res, next) => {
   const deletedProduct = await Product.findByIdAndDelete(id, userid);
 
   if (!deletedProduct) {
-    throw new Error("User is Not Authorized to Delete this product");
+     res
+      .status(401)
+       .json({ message: "User is Not Authorized to Delete this product" });
   }
   res.status(200).json({
     message: "Product successfully Removed",

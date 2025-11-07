@@ -32,9 +32,9 @@ class Cart {
     );
 
     if (checkIfInStock.rows.length === 0) {
-      throw new Error(
-        "Product is out Of Stock, You can Add It to Favorite List"
-      );
+      res.status(400).json({
+        message: "Product is out Of Stock, You can Add It to Favorite List",
+      });
     }
 
     const productExistInCart = await db.query(
@@ -67,7 +67,7 @@ class Cart {
 
     const currentQnt = productInCart.rows[0].quantity;
     const newQnt = currentQnt - quantity;
-    if (newQnt <= 0 ) {
+    if (newQnt <= 0) {
       await db.query(
         `DELETE FROM cart WHERE userid = $1 AND productid = $2 RETURNING *`,
         [userid, productid]

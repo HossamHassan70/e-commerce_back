@@ -29,7 +29,7 @@ router.post("/", async (req, res) => {
       [userid, country, city, street, building_num, apt_num, postal_code]
     );
 
-    res.json({
+    res.status(200).json({
       message: "Address added successfully.",
       address: result.rows[0],
     });
@@ -89,7 +89,7 @@ router.put("/:addressid", async (req, res) => {
       return res.status(404).json({ message: "Address not found." });
     }
 
-    res.json({
+    res.status(200).json({
       message: "Address updated successfully.",
       address: result.rows[0],
     });

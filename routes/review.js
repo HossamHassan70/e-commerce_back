@@ -13,7 +13,7 @@ router.get("/", authController.allowedTo("admin"), async (req, res) => {
     const result = await pool.query(
       "SELECT * FROM review ORDER BY created_at DESC"
     );
-    res.json(result.rows);
+    res.status(200).json(result.rows);
   } catch (err) {
     console.error("Error fetching reviews:", err);
     res.status(500).json({ error: "Server error" });
@@ -35,7 +35,7 @@ router.get("/:productid", async (req, res) => {
         .json({ message: "No reviews found for this product." });
     }
 
-    res.json(result.rows);
+    res.status(200).json(result.rows);
   } catch (err) {
     console.error("Error fetching reviews:", err);
     res.status(500).json({ error: "Server error" });
@@ -60,6 +60,18 @@ router.post("/", async (req, res) => {
         .json({ message: "You have already reviewed this product." });
     }
 
+    //  Check ownership
+    const checkOwner = await pool.query(
+      `SELECT * FROM product WHERE userid = $1 AND productid = $2`,
+      [userid, productid]
+    );
+
+    if (checkOwner.rows.length > 0) {
+      return res.status(400).json({
+        message: "This product Belongs To current User, Can Not Review.",
+      });
+    }
+
     //  If not reviewed, insert new review
     const result = await pool.query(
       `INSERT INTO review (userid, productid, review, rating)
@@ -68,7 +80,7 @@ router.post("/", async (req, res) => {
       [userid, productid, review, rating]
     );
 
-    res.json({
+    res.status(200).json({
       message: "Your review was added successfully",
       review: result.rows[0],
     });
@@ -116,7 +128,7 @@ router.put("/:reviewid", async (req, res) => {
       [review, rating, reviewid]
     );
 
-    res.json({
+    res.status(200).json({
       message: "Your review was updated successfully.",
       review: updated.rows[0],
     });

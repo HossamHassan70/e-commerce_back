@@ -14,7 +14,9 @@ class FavList {
       [userid, productid]
     );
     if (productExistInCart.rows.length > 0) {
-      throw new Error("Product Already Exists In List");
+       res
+      .status(400)
+         .json({ message: "Product Already Exists In List" });
     } else {
       return (
         await db.query(
