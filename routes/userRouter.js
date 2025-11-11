@@ -5,10 +5,18 @@ const {
   loginUser,
   getUserProfile,
 } = require("../controllers/userController");
-const { protect } = require("../middleware/authMiddleware");
+const { protect, allowedTo } = require("../middleware/authMiddleware");
+const contactController = require("../controllers/contactUsController");
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/profile", protect, getUserProfile);
+
+// ADD CONTACT ROUTE HERE
+router.post("/contact", contactController.sendMessage);
+
+router.use(protect);
+router.use(allowedTo("admin"));
+router.get("/contact", contactController.getMsg);
 
 module.exports = router;

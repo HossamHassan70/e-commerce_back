@@ -122,6 +122,19 @@ CREATE TABLE IF NOT EXISTS orders (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- CONTACT US
+CREATE TABLE IF NOT EXISTS contact_messages (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  phone VARCHAR(50),
+  company VARCHAR(100),
+  subject VARCHAR(255),
+  message TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+
 -- ==================================================
 -- END OF SCHEMA
 -- ==================================================
