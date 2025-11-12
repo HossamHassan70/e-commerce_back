@@ -1,4 +1,3 @@
-const { use } = require("react");
 const db = require("../db/pool");
 const asyncHandler = require("express-async-handler");
 
@@ -6,8 +5,8 @@ const asyncHandler = require("express-async-handler");
 // @route   GET  /api/requests
 // @access  Buyer
 exports.sendSellerReq = asyncHandler(async (req, res) => {
-  const userid = req.user.id;
-  const { role, brandName, payload } = req.body;
+  const userid = req.user.userid;
+  const { role, brand_name, payload } = req.body;
   if (!role) {
     res.status(400).json({ message: "Role is required" });
   }
@@ -17,17 +16,17 @@ exports.sendSellerReq = asyncHandler(async (req, res) => {
     [userid]
   );
 
-  if (checkUserRole === "seller") {
+  if (checkUserRole.rows[0]?.role === "seller") {
     res
       .status(400)
       .json({ message: "Request Is Invalid, User Already A Seller" });
   }
 
   const { rows } = await db.query(
-    `INSERT INTO role_change_requests VALUES ($1, $2, $3, $4) RETURNING *`,
-    [userid, role, brandName, payload || {}]
+    `INSERT INTO role_change_requests(userid, role, brand_name, payload) VALUES ($1, $2, $3, $4) RETURNING *`,
+    [userid, role, brand_name, payload]
   );
-  return res.status(201).json(r.rows[0]);
+  return res.status(201).json(rows[0]);
 });
 
 // @desc    Get requests
@@ -41,7 +40,7 @@ exports.getSellerReq = asyncHandler(async (req, res) => {
     `SELECT r.role, r.brand_name, r.role, r.payload, u.first_name, u.last_name, u.email, u.phone_number
         FROM role_change_requests r INNER JOIN users u ON r.userid = u.userid `
   );
-  return res.status(201).json(requests.rows[0]);
+  return res.status(201).json(requests.rows);
 });
 
 // @desc    Accept Or Reject Buyer Req
@@ -51,23 +50,23 @@ exports.processDecision = asyncHandler(async (req, res) => {
   if (req.user.role != "admin") {
     res.status(401).json({ message: "User is Not Authorized For this Action" });
   }
-  const { reqId } = req.params.id;
+  // const reqId = req.params.id;
   const { role, userid } = req.body;
   if (!role) {
     return res.status(400).json({ message: "Role is required" });
   }
 
   if (role === "seller") {
-    await db.query(`UPDATE users SET role = "seller" WHERE userid = $1`, [
+    await db.query(`UPDATE users SET role = 'seller' WHERE userid = $1`, [
       userid,
     ]);
-    return res.status(200).json({ message: "User upgraded to seller" });
+    return res.status(200).json({ message: "User upgraded to Seller" });
   }
 
   if (role === "Buyer") {
     await db.query(`UPDATE users SET role = "buyer" WHERE userid = $1`, [
       userid,
     ]);
-    return res.status(200).json({ message: "User demoted to seller" });
+    return res.status(200).json({ message: "User demoted to Buyer" });
   }
 });

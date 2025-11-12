@@ -1,8 +1,19 @@
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { createUser, findUserByEmail } = require("../models/userModel");
-
+const {
+  createUser,
+  findUserByEmail,
+  verifyUserEmail,
+  getAllUsers,
+} = require("../models/userModel");
+const {
+  upsertEmailCode,
+  getEmailCodeByUserId,
+  deleteEmailCode,
+} = require("../models/emailModel");
+const { generateVerificationCode } = require("../utils/codeGenerator");
+const { sendVerificationEmail } = require("../utils/emailSender");
 const generateToken = (userid) => {
   return jwt.sign({ userid }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
@@ -34,6 +45,12 @@ const registerUser = asyncHandler(async (req, res) => {
     role
   );
 
+  const code = generateVerificationCode();
+  const expired_at = new Date(Date.now() + 60 * 60 * 1000);
+
+  await upsertEmailCode(newUser.userid, code, expired_at);
+  await sendVerificationEmail(newUser.email, newUser.first_name, code);
+
   res.status(201).json({
     message: "User registered successfully",
     user: {
@@ -46,6 +63,71 @@ const registerUser = asyncHandler(async (req, res) => {
       token: generateToken(newUser.userid),
     },
   });
+});
+// ====================== VERIFY EMAIL ======================
+const verifyEmail = asyncHandler(async (req, res) => {
+  const { email, code } = req.body;
+
+  if (!email || !code) {
+    res.status(400);
+    throw new Error("Email and code are required");
+  }
+
+  const user = await findUserByEmail(email);
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  if (user.isverified) {
+    res.status(400);
+    throw new Error("User already verified");
+  }
+
+  const emailRecord = await getEmailCodeByUserId(user.userid);
+  if (!emailRecord) {
+    res.status(400);
+    throw new Error("Verification record not found");
+  }
+
+  if (emailRecord.code !== code) {
+    res.status(400);
+    throw new Error("Invalid code");
+  }
+
+  if (new Date(emailRecord.expired_at) < new Date()) {
+    res.status(400);
+    throw new Error("Code has expired");
+  }
+
+  await verifyUserEmail(user.userid);
+  await deleteEmailCode(user.userid);
+
+  res.status(200).json({ message: "Email verified successfully" });
+});
+
+// ====================== RESEND EMAIL ======================
+const resendVerificationCode = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  const user = await findUserByEmail(email);
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  if (user.isverified) {
+    res.status(400);
+    throw new Error("User already verified");
+  }
+
+  const code = generateVerificationCode();
+  const expired_at = new Date(Date.now() + 10 * 60 * 1000);
+
+  await upsertEmailCode(user.userid, code, expired_at);
+  await sendVerificationEmail(user.email, user.first_name, code);
+
+  res.status(200).json({ message: "Verification code resent successfully" });
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -62,11 +144,15 @@ const loginUser = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("User Does not Exist, Please Signup");
   }
-
+  // console.log("User verification status:", user.isverified);
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     res.status(400);
     throw new Error("Invalid email or password");
+  }
+  if (!user.isverified) {
+    res.status(400);
+    throw new Error("User Does not Verified");
   }
 
   res.json({
@@ -94,4 +180,23 @@ const getUserProfile = asyncHandler(async (req, res) => {
     user: req.user,
   });
 });
-module.exports = { registerUser, loginUser, getUserProfile };
+
+const getAll = asyncHandler(async (req, res) => {
+  if (req.user.role !== "admin") {
+    res.status(401);
+    throw new Error("User is not authorized");
+  }
+
+  const users = await getAllUsers();
+  res.json({
+    users,
+  });
+});
+module.exports = {
+  registerUser,
+  loginUser,
+  getUserProfile,
+  resendVerificationCode,
+  verifyEmail,
+  getAll,
+};

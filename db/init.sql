@@ -10,10 +10,22 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(150) UNIQUE NOT NULL,
     password VARCHAR(250) NOT NULL,
     phone_number VARCHAR(20),
+    isVerified Boolean,
     -- ADD ADMIN ROLE TO USER
     role VARCHAR(15) DEFAULT 'buyer' CHECK (role in ('buyer', 'seller', 'admin')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ); 
+-- ==================================================
+-- EMAIL TABLE
+-- ==================================================
+CREATE TABLE IF NOT EXISTS emails (
+    emailid SERIAL PRIMARY KEY,
+    userid INT UNIQUE REFERENCES users(userid) ON DELETE CASCADE,
+    code VARCHAR(6) NOT NULL,
+    expired_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 
 -- ==================================================
 -- ADDRESS TABLE
