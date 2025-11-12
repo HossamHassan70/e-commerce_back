@@ -9,8 +9,8 @@ const createUser = async (
   role
 ) => {
   const result = await pool.query(
-    `INSERT INTO users (first_name, last_name, email, password, phone_number, role)
-     VALUES ($1, $2, $3, $4, $5, $6)
+    `INSERT INTO users (first_name, last_name, email, password, phone_number, role, isVerified)
+     VALUES ($1, $2, $3, $4, $5, $6, false)
      RETURNING userid, first_name, last_name, email, phone_number, role, created_at`,
     [
       first_name,
@@ -31,4 +31,12 @@ const findUserByEmail = async (email) => {
   return result.rows[0];
 };
 
-module.exports = { createUser, findUserByEmail };
+const verifyUserEmail = async (userid) => {
+  const result = await pool.query(
+    "UPDATE users SET isverified = true WHERE userid = $1 RETURNING *",
+    [userid]
+  );
+  return result.rows[0];
+};
+
+module.exports = { createUser, findUserByEmail, verifyUserEmail };
