@@ -11,11 +11,11 @@ router.use(authController.allowedTo("admin"));
 // ➕ Add a new category
 router.post("/", async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name, image } = req.body;
 
     const result = await pool.query(
-      "INSERT INTO category (name) VALUES ($1) RETURNING *",
-      [name]
+      "INSERT INTO category (name, image) VALUES ($1) RETURNING *",
+      [name, image]
     );
 
     res.status(200).json({
@@ -45,11 +45,11 @@ router.get("/", async (req, res) => {
 router.put("/:categoryid", async (req, res) => {
   try {
     const { categoryid } = req.params;
-    const { name } = req.body;
+    const { name, image } = req.body;
 
     const result = await pool.query(
-      "UPDATE category SET name = $1 WHERE categoryid = $2 RETURNING *",
-      [name, categoryid]
+      "UPDATE category SET name = $1 AND image = $2 WHERE categoryid = $3 RETURNING *",
+      [name, image, categoryid]
     );
 
     if (result.rows.length === 0) {
