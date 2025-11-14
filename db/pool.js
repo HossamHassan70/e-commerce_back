@@ -1,4 +1,4 @@
-const { Pool } = require("pg");
+const { Pool } = require("@neondatabase/serverless");
 const dotenv = require("dotenv");
 dotenv.config({ path: "./.env" });
 
@@ -8,6 +8,9 @@ const pool = new Pool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 pool.on("connect", () => {
