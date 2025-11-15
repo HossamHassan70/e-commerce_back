@@ -57,7 +57,8 @@ CREATE TABLE IF NOT EXISTS credit (
 -- ==================================================
 CREATE TABLE IF NOT EXISTS category (
     categoryid SERIAL PRIMARY KEY,
-    name VARCHAR(100)  
+    name VARCHAR(100),
+    img TEXT[]
 );
 
 -- ==================================================
@@ -144,6 +145,14 @@ CREATE TABLE IF NOT EXISTS contact_messages (
   subject VARCHAR(255),
   message TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- ROLE REQUESTS TABLE
+CREATE TABLE IF NOT EXISTS role_change_requests(
+    role VARCHAR(50) NOT NULL,
+    brand_name VARCHAR(50) NOT NULL,
+    payload VARCHAR(200),
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
 

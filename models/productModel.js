@@ -36,7 +36,14 @@ class Product {
   }
 
   // @desc GET ALL PRODUCT
-  static async getAll(filters = {}) {
+  static async getAll(filters = {}, userid = 0) {
+    if (userid !== 0) {
+      const { rows } = await db.query(
+        `SELECT * FROM product WHERE userid = $1`,
+        [userid]
+      );
+      return rows;
+    }
     let statement = `
             SELECT p.productid, p.categoryid, p.title, p.p_description, p.price, p.stock, p.img, p.availability_status, p.discount_percent, c.name
             FROM product p

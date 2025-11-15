@@ -5,6 +5,7 @@ const {
   createUser,
   findUserByEmail,
   verifyUserEmail,
+  getAllUsers,
 } = require("../models/userModel");
 const {
   upsertEmailCode,
@@ -78,7 +79,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  if (user.isVerified) {
+  if (user.isverified) {
     res.status(400);
     throw new Error("User already verified");
   }
@@ -115,7 +116,7 @@ const resendVerificationCode = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  if (user.isVerified) {
+  if (user.isverified) {
     res.status(400);
     throw new Error("User already verified");
   }
@@ -143,13 +144,13 @@ const loginUser = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("User Does not Exist, Please Signup");
   }
-
+  // console.log("User verification status:", user.isverified);
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     res.status(400);
     throw new Error("Invalid email or password");
   }
-  if (!user.isVerified) {
+  if (!user.isverified) {
     res.status(400);
     throw new Error("User Does not Verified");
   }
@@ -179,10 +180,23 @@ const getUserProfile = asyncHandler(async (req, res) => {
     user: req.user,
   });
 });
+
+const getAll = asyncHandler(async (req, res) => {
+  if (req.user.role !== "admin") {
+    res.status(401);
+    throw new Error("User is not authorized");
+  }
+
+  const users = await getAllUsers();
+  res.json({
+    users,
+  });
+});
 module.exports = {
   registerUser,
   loginUser,
   getUserProfile,
   resendVerificationCode,
   verifyEmail,
+  getAll,
 };

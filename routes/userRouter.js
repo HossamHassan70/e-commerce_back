@@ -6,6 +6,7 @@ const {
   getUserProfile,
   verifyEmail,
   resendVerificationCode,
+  getAll,
 } = require("../controllers/userController");
 const { protect, allowedTo } = require("../middleware/authMiddleware");
 const contactController = require("../controllers/contactUsController");
@@ -46,5 +47,6 @@ router.post("/contact", contactController.sendMessage);
 router.use(protect);
 router.use(allowedTo("admin"));
 router.get("/contact", contactController.getMsg);
+router.get("/view-users", getAll);
 
 module.exports = router;

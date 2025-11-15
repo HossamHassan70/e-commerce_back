@@ -6,7 +6,7 @@ const router = express.Router();
 
 // ADD PERMISSIONS
 router.use(authController.protect);
-router.use(authController.allowedTo("buyer", "seller"));
+router.use(authController.allowedTo("buyer", "seller", "admin"));
 
 // ➕ Add address
 router.post("/", async (req, res) => {

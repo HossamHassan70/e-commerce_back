@@ -171,7 +171,7 @@ router.delete(
       // );
       await pool.query(`DELETE FROM review WHERE reviewid = $1`, [reviewid]);
 
-      res.json({ message: "Your review was deleted successfully." });
+      res.json({ message: "Review was deleted successfully." });
     } catch (err) {
       console.error("Error deleting review:", err);
       res.status(500).json({ error: "Server error" });

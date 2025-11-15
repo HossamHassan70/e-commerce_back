@@ -10,6 +10,7 @@ const reviewRoutes = require("./routes/review");
 const addressRoutes = require("./routes/address");
 const categoryRoutes = require("./routes/category");
 const orderRouter = require("./routes/orderRoutes");
+const requestRouter = require("./routes/requestRouter");
 const initDB = require("./db/initDB");
 dotenv.config({ path: "./.env" });
 
@@ -30,6 +31,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/address", addressRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/orders", orderRouter);
+app.use("/api/requests", requestRouter);
 
 app.listen(port, () => {
   console.log("server running port 3000");

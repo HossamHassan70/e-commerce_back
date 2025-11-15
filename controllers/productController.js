@@ -25,6 +25,19 @@ exports.getAllProducts = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc    Get all products For Seller
+// @route   GET  /api/products
+// @access  seller
+exports.getSellerProducts = asyncHandler(async (req, res) => {
+  const userid = req.user.userid;
+  const sellerProducts = await Product.getAll({}, userid);
+  res.status(200).json({
+    status: "success",
+    length: sellerProducts.length,
+    sellerProducts,
+  });
+});
+
 // @desc    Get A product By ID
 // @route   GET  /api/products/:id
 // @access  All
@@ -89,9 +102,9 @@ exports.deleteProduct = asyncHandler(async (req, res, next) => {
   const deletedProduct = await Product.findByIdAndDelete(id, userid);
 
   if (!deletedProduct) {
-     res
+    res
       .status(401)
-       .json({ message: "User is Not Authorized to Delete this product" });
+      .json({ message: "User is Not Authorized to Delete this product" });
   }
   res.status(200).json({
     message: "Product successfully Removed",

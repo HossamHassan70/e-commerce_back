@@ -1,3 +1,4 @@
+const { assign } = require("nodemailer/lib/shared");
 const pool = require("../db/pool");
 
 const createUser = async (
@@ -9,9 +10,9 @@ const createUser = async (
   role
 ) => {
   const result = await pool.query(
-    `INSERT INTO users (first_name, last_name, email, password, phone_number, role, isVerified)
+    `INSERT INTO users (first_name, last_name, email, password, phone_number, role, isverified)
      VALUES ($1, $2, $3, $4, $5, $6, false)
-     RETURNING userid, first_name, last_name, email, phone_number, role, created_at`,
+     RETURNING userid, first_name, last_name, email, password, phone_number, role, isverified`,
     [
       first_name,
       last_name,
@@ -25,9 +26,10 @@ const createUser = async (
 };
 
 const findUserByEmail = async (email) => {
-  const result = await pool.query(`SELECT * FROM users WHERE email = $1`, [
-    email,
-  ]);
+  const result = await pool.query(
+    `SELECT userid, first_name, last_name, email, password, phone_number, role, isverified FROM users WHERE email = $1`,
+    [email]
+  );
   return result.rows[0];
 };
 
@@ -39,4 +41,8 @@ const verifyUserEmail = async (userid) => {
   return result.rows[0];
 };
 
-module.exports = { createUser, findUserByEmail, verifyUserEmail };
+const getAllUsers = async () => {
+  const result = await pool.query("SELECT * FROM users");
+  return result.rows;
+};
+module.exports = { createUser, findUserByEmail, verifyUserEmail, getAllUsers };

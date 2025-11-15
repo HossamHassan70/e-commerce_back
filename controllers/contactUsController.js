@@ -33,7 +33,6 @@ exports.getMsg = asyncHandler(async (req, res) => {
   );
   res.status(200).json({
     success: true,
-    message: "Message received. We'll get back to you soon.",
     msgs: msgs.rows,
   });
 });
