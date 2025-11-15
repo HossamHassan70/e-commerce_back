@@ -2,6 +2,8 @@ const pool = require("../db/pool");
 
 const createOrder = async (
   userid,
+  //
+  items,
   order_status,
   total_amount,
   shipping_fee
@@ -12,6 +14,18 @@ const createOrder = async (
      RETURNING *`,
     [userid, order_status, total_amount, shipping_fee]
   );
+
+  //ADD ITEMS TO ORDER ITEMS TABLE
+  const orderId = result.rows[0].orderid;
+
+  for (const item of items) {
+    await pool.query(
+      `INSERT INTO order_items (orderid, productid, quantity, subtotal)
+       VALUES ($1, $2, $3, $4)`,
+      [orderId, item.productid, item.quantity, item.subtotal]
+    );
+  }
+
   return result.rows[0];
 };
 
@@ -21,11 +35,21 @@ const getAllOrders = async () => {
 };
 
 const getOrderById = async (orderid) => {
-  const result = await pool.query(`SELECT * FROM orders WHERE orderid = $1`, [
-    orderid,
-  ]);
-  return result.rows[0];
+  const result = await pool.query(
+    `SELECT i.productid, i.subtotal, p.img FROM order_items i INNER JOIN product p
+    ON p.productid = i.productid
+    WHERE i.orderid = $1`,
+    [orderid]
+  );
+  return result.rows;
 };
+
+// const getOrderById = async (orderid) => {
+//   const result = await pool.query(`SELECT * FROM orders WHERE orderid = $1`, [
+//     orderid,
+//   ]);
+//   return result.rows[0];
+// };
 
 const getOrdersByUserId = async (userid) => {
   const result = await pool.query(

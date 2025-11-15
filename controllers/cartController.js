@@ -44,17 +44,17 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
 // @desc    Reduce Quantity
 // @route   POST  /api/cart
 // @access  Buyer/Seller
-exports.decreaseProductQnt = asyncHandler(async (req, res, next) => {
-  const userid = req.user.userid;
-  const { productid, quantity } = req.body;
+// exports.decreaseProductQnt = asyncHandler(async (req, res, next) => {
+//   const userid = req.user.userid;
+//   const { productid, quantity } = req.body;
 
-  const cartItem = await Cart.decreaseQnt(userid, productid, quantity);
+//   const cartItem = await Cart.decreaseQnt(userid, productid, quantity);
 
-  res.status(201).json({
-    message: "Product Quantity Reduced",
-    cartItem,
-  });
-});
+//   res.status(201).json({
+//     message: "Product Quantity Reduced",
+//     cartItem,
+//   });
+// });
 
 // @desc    Remove Product From Cart
 // @route   DELETE  /api/cart/remove

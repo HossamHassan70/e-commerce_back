@@ -26,63 +26,63 @@ class Cart {
 
   // @desc ADD OR INC QUANTITY TO CART
   static async addOrUpdate(userid, productid, quantity) {
-    const checkIfInStock = await db.query(
-      `SELECT productid FROM product WHERE productid = $1 AND availability_status = $2`,
-      [productid, "In stock"]
+    // const checkIfInStock = await db.query(
+    //   `SELECT productid FROM product WHERE productid = $1 AND availability_status = $2`,
+    //   [productid, "In stock"]
+    // );
+
+    // if (checkIfInStock.rows.length === 0) {
+    //   res.status(400).json({
+    //     message: "Product is out Of Stock, You can Add It to Favorite List",
+    //   });
+    // }
+
+    // const productExistInCart = await db.query(
+    //   `SELECT quantity FROM cart WHERE userid = $1 AND productid = $2`,
+    //   [userid, productid]
+    // );
+
+    // if (productExistInCart.rows.length > 0) {
+    //   const newQnt = productExistInCart.rows[0].quantity + quantity;
+    //   const updateQnt = await db.query(
+    //     `UPDATE cart SET quantity = $1 WHERE userid = $2 AND productid = $3 RETURNING *`,
+    //     [newQnt, userid, productid]
+    //   );
+    //   return updateQnt.rows[0];
+    // } else {
+    const addProduct = await db.query(
+      `INSERT INTO cart (userid, productid, quantity) VALUES ($1, $2, $3) RETURNING *`,
+      [userid, productid, quantity]
     );
-
-    if (checkIfInStock.rows.length === 0) {
-      res.status(400).json({
-        message: "Product is out Of Stock, You can Add It to Favorite List",
-      });
-    }
-
-    const productExistInCart = await db.query(
-      `SELECT quantity FROM cart WHERE userid = $1 AND productid = $2`,
-      [userid, productid]
-    );
-
-    if (productExistInCart.rows.length > 0) {
-      const newQnt = productExistInCart.rows[0].quantity + quantity;
-      const updateQnt = await db.query(
-        `UPDATE cart SET quantity = $1 WHERE userid = $2 AND productid = $3 RETURNING *`,
-        [newQnt, userid, productid]
-      );
-      return updateQnt.rows[0];
-    } else {
-      const addProduct = await db.query(
-        `INSERT INTO cart (userid, productid, quantity) VALUES ($1, $2, $3) RETURNING *`,
-        [userid, productid, quantity]
-      );
-      return addProduct.rows[0];
-    }
+    return addProduct.rows[0];
+    //}
   }
 
   // @desc REDUCE QUANTITY
-  static async decreaseQnt(userid, productid, quantity) {
-    const productInCart = await db.query(
-      `SELECT quantity FROM cart WHERE userid = $1 AND productid = $2`,
-      [userid, productid]
-    );
+  // static async decreaseQnt(userid, productid, quantity) {
+  //   const productInCart = await db.query(
+  //     `SELECT quantity FROM cart WHERE userid = $1 AND productid = $2`,
+  //     [userid, productid]
+  //   );
 
-    const currentQnt = productInCart.rows[0].quantity;
-    const newQnt = currentQnt - quantity;
-    if (newQnt <= 0) {
-      await db.query(
-        `DELETE FROM cart WHERE userid = $1 AND productid = $2 RETURNING *`,
-        [userid, productid]
-      );
+  //   const currentQnt = productInCart.rows[0].quantity;
+  //   const newQnt = currentQnt - quantity;
+  //   if (newQnt <= 0) {
+  //     await db.query(
+  //       `DELETE FROM cart WHERE userid = $1 AND productid = $2 RETURNING *`,
+  //       [userid, productid]
+  //     );
 
-      return { message: "Item Removed" };
-    } else {
-      const reduceQnt = await db.query(
-        `UPDATE cart SET quantity = $1 WHERE userid = $2 AND productid = $3 RETURNING *`,
-        [newQnt, userid, productid]
-      );
+  //     return { message: "Item Removed" };
+  // } else {
+  //   const reduceQnt = await db.query(
+  //     `UPDATE cart SET quantity = $1 WHERE userid = $2 AND productid = $3 RETURNING *`,
+  //     [newQnt, userid, productid]
+  //   );
 
-      return reduceQnt.rows[0];
-    }
-  }
+  //return reduceQnt.rows[0];
+
+  //}
 
   // @desc REMOVE PRODUCT FROM CART
   static async remove(userid, productid) {

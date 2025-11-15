@@ -10,7 +10,7 @@ const {
 } = require("../models/orderModel");
 
 const createNewOrder = asyncHandler(async (req, res) => {
-  const { total_amount, shipping_fee } = req.body;
+  const { total_amount, shipping_fee, items } = req.body;
 
   if (!total_amount) {
     res.status(400);
@@ -19,6 +19,7 @@ const createNewOrder = asyncHandler(async (req, res) => {
 
   const order = await createOrder(
     req.user.userid,
+    items,
     "pending",
     total_amount,
     shipping_fee || 0
@@ -35,6 +36,13 @@ const getOrders = asyncHandler(async (req, res) => {
 
   const orders = await getAllOrders();
   res.status(200).json(orders);
+});
+
+//GET ORDERS' ITEMS
+const getOrderItems = asyncHandler(async (req, res) => {
+  const orderid = req.params.id;
+  const items = await getOrderById(orderid);
+  return res.status(200).json({ items });
 });
 
 // const getOrder = asyncHandler(async (req, res) => {
@@ -129,4 +137,5 @@ module.exports = {
   // updateOrderById,
   changeStatus,
   deleteOrderById,
+  getOrderItems,
 };

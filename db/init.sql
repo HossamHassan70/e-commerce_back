@@ -44,13 +44,13 @@ CREATE TABLE IF NOT EXISTS address (
 -- ==================================================
 -- CREDIT TABLE
 -- ==================================================
-CREATE TABLE IF NOT EXISTS credit (
-    creditid SERIAL PRIMARY KEY,
-    userid INT REFERENCES users(userid) ON DELETE CASCADE,
-    card_num VARCHAR(50) UNIQUE NOT NULL,
-    card_exp DATE NOT NULL,
-    card_type VARCHAR(500) NOT NULL  
-);
+-- CREATE TABLE IF NOT EXISTS credit (
+--     creditid SERIAL PRIMARY KEY,
+--     userid INT REFERENCES users(userid) ON DELETE CASCADE,
+--     card_num VARCHAR(50) UNIQUE NOT NULL,
+--     card_exp DATE NOT NULL,
+--     card_type VARCHAR(500) NOT NULL  
+-- );
 
 -- ==================================================
 -- CATEGORY TABLE
@@ -135,7 +135,9 @@ CREATE TABLE IF NOT EXISTS orders (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- ==================================================
 -- CONTACT US
+-- ==================================================
 CREATE TABLE IF NOT EXISTS contact_messages (
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
@@ -147,14 +149,28 @@ CREATE TABLE IF NOT EXISTS contact_messages (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
+-- ==================================================
 -- ROLE REQUESTS TABLE
+-- ==================================================
 CREATE TABLE IF NOT EXISTS role_change_requests(
+    req SERIAL PRIMARY KEY,
     role VARCHAR(50) NOT NULL,
     brand_name VARCHAR(50) NOT NULL,
     payload VARCHAR(200),
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+-- ==================================================
+--ORDER_ITEMS
+-- ==================================================
+CREATE TABLE IF NOT EXISTS order_items(
+    orderitem SERIAL PRIMARY KEY,
+    orderid INT REFERENCES orders(orderid) ON DELETE CASCADE,
+    productid INT REFERENCES product(productid) ON DELETE CASCADE,
+    quantity INT DEFAULT 1,
+    --total_amount NUMERIC(10,2),
+    subtotal NUMERIC(10,2)
+);
 
 -- ==================================================
 -- END OF SCHEMA
