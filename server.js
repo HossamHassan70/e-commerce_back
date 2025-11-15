@@ -16,8 +16,10 @@ dotenv.config({ path: "./.env" });
 
 const app = express();
 const port = process.env.PORT;
-const swaggerDocs = require("./swagger/swagger");
-swaggerDocs(app);
+const swaggerUi = require("swagger-ui-express");
+const swaggerFile = require("./swagger-output.json");
+
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 app.use(helmet());
 app.use(cors());

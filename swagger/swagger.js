@@ -1,29 +1,15 @@
-const swaggerJsdoc = require("swagger-jsdoc");
-const swaggerUi = require("swagger-ui-express");
+// const swaggerAutogen = require("swagger-autogen")();
 
-const options = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "E-Commerce API",
-      version: "1.0.0",
-      description: "API documentation for the e-commerce backend",
-    },
-    servers: [
-      {
-        url: "http://localhost:3000", // change to your deployed URL later
-      },
-    ],
-  },
-  apis: ["./routes/*.js"], // Swagger reads docs from route files
-};
+// const doc = {
+//   info: {
+//     title: "E-commerce API",
+//     description: "Auto-generated documentation",
+//   },
+//   host: "localhost:3000",
+//   schemes: ["http"],
+// };
 
-const swaggerSpec = swaggerJsdoc(options);
+// const outputFile = "./swagger-output.json";
+// const endpointsFiles = ["./server.js"]; // your main file
 
-function swaggerDocs(app) {
-  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-  console.log("📄 Swagger Docs available at: http://localhost:3000/api-docs");
-}
-
-module.exports = swaggerDocs;
+// swaggerAutogen(outputFile, endpointsFiles, doc);
