@@ -32,7 +32,7 @@ class Cart {
     // );
 
     // if (checkIfInStock.rows.length === 0) {
-    //   res.status(400).json({
+    //   res.status(401).json({
     //     message: "Product is out Of Stock, You can Add It to Favorite List",
     //   });
     // }
