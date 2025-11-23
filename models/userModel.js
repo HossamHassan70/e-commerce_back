@@ -10,9 +10,9 @@ const createUser = async (
   role
 ) => {
   const result = await pool.query(
-    `INSERT INTO users (first_name, last_name, email, password, phone_number, role, isverified)
+    `INSERT INTO users (first_name, last_name, email, password, phone_number, role, isVerified)
      VALUES ($1, $2, $3, $4, $5, $6, false)
-     RETURNING userid, first_name, last_name, email, password, phone_number, role, isverified`,
+     RETURNING userid, first_name, last_name, email, password, phone_number, role, isVerified`,
     [
       first_name,
       last_name,
@@ -35,7 +35,7 @@ const findUserByEmail = async (email) => {
 
 const verifyUserEmail = async (userid) => {
   const result = await pool.query(
-    "UPDATE users SET isverified = true WHERE userid = $1 RETURNING *",
+    "UPDATE users SET isVerified = true WHERE userid = $1 RETURNING *",
     [userid]
   );
   return result.rows[0];
@@ -45,4 +45,24 @@ const getAllUsers = async () => {
   const result = await pool.query("SELECT * FROM users");
   return result.rows;
 };
-module.exports = { createUser, findUserByEmail, verifyUserEmail, getAllUsers };
+
+const deleteUnverifiedExpiredUsers = async () => {
+  const result = await pool.query(
+    `DELETE FROM users
+     WHERE isVerified = false
+     AND userid IN (
+       SELECT userid FROM email_verification
+       WHERE expired_at < NOW() - INTERVAL '1 hour'
+     )
+     RETURNING userid, email`
+  );
+  return result.rows;
+};
+
+module.exports = {
+  createUser,
+  findUserByEmail,
+  verifyUserEmail,
+  getAllUsers,
+  deleteUnverifiedExpiredUsers
+};
