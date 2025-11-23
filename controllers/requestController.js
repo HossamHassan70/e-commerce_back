@@ -26,6 +26,11 @@ exports.sendSellerReq = asyncHandler(async (req, res) => {
     `INSERT INTO role_change_requests(userid, role, brand_name, payload) VALUES ($1, $2, $3, $4) RETURNING *`,
     [userid, role, brand_name, payload]
   );
+
+  const userResult = await db.query(
+    `UPDATE users SET phone_number= $2 WHERE userid = $1 RETURNING *`,
+    [userid, phone_number]
+  );
   return res.status(201).json(rows[0]);
 });
 
