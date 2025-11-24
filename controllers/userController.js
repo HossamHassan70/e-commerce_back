@@ -52,7 +52,8 @@ const registerUser = asyncHandler(async (req, res) => {
   await sendVerificationEmail(newUser.email, newUser.first_name, code);
 
   res.status(201).json({
-    message: "User registered successfully",
+    message:
+      "User registered successfully. Please check your email to verify your account.",
     user: {
       userid: newUser.userid,
       first_name: newUser.first_name,
@@ -60,9 +61,20 @@ const registerUser = asyncHandler(async (req, res) => {
       email: newUser.email,
       phone_number: newUser.phone_number,
       role: newUser.role,
-      token: generateToken(newUser.userid),
     },
   });
+  // res.status(201).json({
+  //   message: "User registered successfully",
+  //   user: {
+  //     userid: newUser.userid,
+  //     first_name: newUser.first_name,
+  //     last_name: newUser.last_name,
+  //     email: newUser.email,
+  //     phone_number: newUser.phone_number,
+  //     role: newUser.role,
+  //     token: generateToken(newUser.userid),
+  //   },
+  // });
 });
 // ====================== VERIFY EMAIL ======================
 const verifyEmail = asyncHandler(async (req, res) => {
@@ -103,7 +115,19 @@ const verifyEmail = asyncHandler(async (req, res) => {
   await verifyUserEmail(user.userid);
   await deleteEmailCode(user.userid);
 
-  res.status(200).json({ message: "Email verified successfully" });
+  // res.status(200).json({ message: "Email verified successfully" });
+  res.status(200).json({
+    message: "Email verified successfully",
+    user: {
+      userid: newUser.userid,
+      first_name: newUser.first_name,
+      last_name: newUser.last_name,
+      email: newUser.email,
+      phone_number: newUser.phone_number,
+      role: newUser.role,
+      token: generateToken(newUser.userid),
+    },
+  });
 });
 
 // ====================== RESEND EMAIL ======================
@@ -127,7 +151,16 @@ const resendVerificationCode = asyncHandler(async (req, res) => {
   await upsertEmailCode(user.userid, code, expired_at);
   await sendVerificationEmail(user.email, user.first_name, code);
 
-  res.status(200).json({ message: "Verification code resent successfully" });
+  res.status(200).json({
+    message: "Verification code resent successfully",
+    userid: newUser.userid,
+    first_name: newUser.first_name,
+    last_name: newUser.last_name,
+    email: newUser.email,
+    phone_number: newUser.phone_number,
+    role: newUser.role,
+    token: generateToken(newUser.userid),
+  });
 });
 
 const loginUser = asyncHandler(async (req, res) => {
