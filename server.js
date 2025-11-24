@@ -12,6 +12,7 @@ const categoryRoutes = require("./routes/category");
 const orderRouter = require("./routes/orderRoutes");
 const requestRouter = require("./routes/requestRouter");
 const initDB = require("./db/initDB");
+const { startCleanupJob } = require("./jobs/cleanupJobs");
 dotenv.config({ path: "./.env" });
 
 const app = express();
@@ -37,4 +38,6 @@ app.use("/api/requests", requestRouter);
 
 app.listen(port, () => {
   console.log("server running port 3000");
+  startCleanupJob();
+  console.log("Cleanup job scheduled to run daily at midnight");
 });

@@ -31,7 +31,10 @@ exports.sendSellerReq = asyncHandler(async (req, res) => {
     `UPDATE users SET phone_number= $2 WHERE userid = $1 RETURNING *`,
     [userid, phone_number]
   );
+<<<<<<< HEAD
 
+=======
+>>>>>>> main
   return res.status(201).json(rows[0]);
 });
 
