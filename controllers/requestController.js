@@ -6,7 +6,7 @@ const asyncHandler = require("express-async-handler");
 // @access  Buyer
 exports.sendSellerReq = asyncHandler(async (req, res) => {
   const userid = req.user.userid;
-  const { role, phone_number, brand_name, payload } = req.body;
+  const { role, brand_name, payload } = req.body;
   if (!role) {
     res.status(400).json({ message: "Role is required" });
   }
@@ -31,10 +31,6 @@ exports.sendSellerReq = asyncHandler(async (req, res) => {
     `UPDATE users SET phone_number= $2 WHERE userid = $1 RETURNING *`,
     [userid, phone_number]
   );
-<<<<<<< HEAD
-
-=======
->>>>>>> main
   return res.status(201).json(rows[0]);
 });
 
