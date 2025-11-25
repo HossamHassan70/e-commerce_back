@@ -81,7 +81,14 @@ class Product {
     const { rows } = await db.query(statement, values);
     return rows;
   }
-
+  //@desc GET ALL PRODUCTS AND SELLER FOR ADMIN VIEW
+  static async getProductsInfo() {
+    const { rows } = await db.query(`
+          SELECT p.* , u.first_name, u.last_name, u.email
+          FROM product p
+          INNER JOIN users u ON p.userid = c.userid`);
+    return rows;
+  }
   // @desc GET ONE PRODUCT BY ID
   static async findById(productid) {
     const statement = `

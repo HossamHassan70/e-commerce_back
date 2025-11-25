@@ -25,6 +25,19 @@ exports.getAllProducts = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc    Get all products for admin dashboard
+// @route   GET  /api/dashboard/products
+// @access  All
+exports.getProductsForAdmin = asyncHandler(async (req, res, next) => {
+  const products = await Product.getProductsInfo();
+
+  res.status(200).json({
+    status: "success",
+    length: products.length,
+    products,
+  });
+});
+
 // @desc    Get all products For Seller
 // @route   GET  /api/products
 // @access  seller
