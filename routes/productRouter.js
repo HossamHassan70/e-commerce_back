@@ -29,7 +29,7 @@ router
   )
   .delete(
     authController.protect,
-    authController.allowedTo("seller"),
+    authController.allowedTo("seller", "admin"),
     productController.deleteProduct
   );
 
