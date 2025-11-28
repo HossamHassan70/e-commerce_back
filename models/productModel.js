@@ -86,7 +86,7 @@ class Product {
     const { rows } = await db.query(`
           SELECT p.* , u.first_name, u.last_name, u.email
           FROM product p
-          INNER JOIN users u ON p.userid = c.userid`);
+          INNER JOIN users u ON p.userid = u.userid`);
     return rows;
   }
   // @desc GET ONE PRODUCT BY ID
@@ -128,6 +128,11 @@ class Product {
         `;
     const { rows } = await db.query(statement, [productId, userid]);
     return rows[0];
+  }
+
+  //@desc FORCE DELETE BY ADMIN
+  static async forceDelete(productid) {
+    return db.query("DELETE FROM product WHERE productid = $1", [productid]);
   }
 }
 

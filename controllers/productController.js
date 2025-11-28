@@ -112,6 +112,13 @@ exports.deleteProduct = asyncHandler(async (req, res, next) => {
   if (!product) {
     throw new Error("No Product Found");
   }
+
+  if (req.user.role === "admin") {
+    await Product.forceDelete(id);
+    res.status(200).json({
+      message: "Product successfully Removed",
+    });
+  }
   const deletedProduct = await Product.findByIdAndDelete(id, userid);
 
   if (!deletedProduct) {

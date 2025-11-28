@@ -36,6 +36,12 @@ router
 // --------------------
 // PUBLIC ROUTES
 // --------------------
+router.get(
+  "/dashboard/products",
+  authController.protect,
+  authController.allowedTo("admin"),
+  productController.getProductsForAdmin
+);
 router.get("/", productController.getAllProducts);
 router.get("/:id", productController.getProduct);
 
