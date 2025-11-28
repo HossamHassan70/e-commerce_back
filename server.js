@@ -11,7 +11,8 @@ const addressRoutes = require("./routes/address");
 const categoryRoutes = require("./routes/category");
 const orderRouter = require("./routes/orderRoutes");
 const requestRouter = require("./routes/requestRouter");
-const initDB = require("./db/initDB");
+//const initDB = require("./db/initDB");
+const pool = require("./db/pool");
 const { startCleanupJob } = require("./jobs/cleanupJobs");
 dotenv.config({ path: "./.env" });
 
@@ -25,6 +26,15 @@ const port = process.env.PORT;
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+
+app.get("/db-test", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT NOW()");
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 app.use("/api/products", productRouter);
 app.use("/api/users", userRoutes);
