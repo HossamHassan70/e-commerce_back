@@ -26,7 +26,7 @@ const pool = new Pool({
   host: "db.xionfouauoaizgensbwk.supabase.co", // Supabase hostname
   port: 5432,
   user: "postgres",
-  password: process.env.DB_PASSWORD, // put your password in .env
+  password: process.env.DB_HOST_PASSWORD, // put your password in .env
   database: "postgres",
   ssl: { rejectUnauthorized: false },
   family: 4, // forces IPv4
