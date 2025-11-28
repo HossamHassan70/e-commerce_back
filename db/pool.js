@@ -23,7 +23,11 @@ console.log("DATABASE_URL =", process.env.DATABASE_URL);
 // });
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  host: "db.xionfouauoaizgensbwk.supabase.co", // Supabase hostname
+  port: 5432,
+  user: "postgres",
+  password: process.env.DB_PASSWORD, // put your password in .env
+  database: "postgres",
   ssl: { rejectUnauthorized: false },
   family: 4, // forces IPv4
 });
