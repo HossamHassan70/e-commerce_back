@@ -5,7 +5,7 @@ const authController = require("../middleware/authMiddleware");
 const router = express.Router();
 
 // ADD PERMISSIONS
-router.use(authController.protect);
+//router.use(authController.protect);
 
 // ➕ Add a new category
 router.post("/", authController.allowedTo("admin"), async (req, res) => {
@@ -28,21 +28,17 @@ router.post("/", authController.allowedTo("admin"), async (req, res) => {
 });
 
 // 🔍 Get all categories
-router.get(
-  "/",
-  authController.allowedTo("admin", "buyer", "seller"),
-  async (req, res) => {
-    try {
-      const result = await pool.query(
-        "SELECT * FROM category ORDER BY categoryid ASC"
-      );
-      res.status(200).json(result.rows);
-    } catch (err) {
-      console.error("Error fetching categories:", err);
-      res.status(500).json({ error: "Server error" });
-    }
+router.get("/", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM category ORDER BY categoryid ASC"
+    );
+    res.status(200).json(result.rows);
+  } catch (err) {
+    console.error("Error fetching categories:", err);
+    res.status(500).json({ error: "Server error" });
   }
-);
+});
 
 // ✏️ Update category name
 router.put(
