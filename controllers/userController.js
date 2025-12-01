@@ -55,12 +55,12 @@ const registerUser = asyncHandler(async (req, res) => {
     message:
       "User registered successfully. Please check your email to verify your account.",
     user: {
-      userid: user.userid,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      email: user.email,
-      phone_number: user.phone_number,
-      role: user.role,
+      userid: newUser.userid,
+      first_name: newUser.first_name,
+      last_name: newUser.last_name,
+      email: newUser.email,
+      phone_number: newUser.phone_number,
+      role: newUser.role,
     },
   });
   // res.status(201).json({
@@ -119,13 +119,13 @@ const verifyEmail = asyncHandler(async (req, res) => {
   res.status(200).json({
     message: "Email verified successfully",
     user: {
-      userid: newUser.userid,
-      first_name: newUser.first_name,
-      last_name: newUser.last_name,
-      email: newUser.email,
-      phone_number: newUser.phone_number,
-      role: newUser.role,
-      token: generateToken(newUser.userid),
+      userid: user.userid,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
+      phone_number: user.phone_number,
+      role: user.role,
+      token: generateToken(user.userid),
     },
   });
 });
@@ -153,13 +153,13 @@ const resendVerificationCode = asyncHandler(async (req, res) => {
 
   res.status(200).json({
     message: "Verification code resent successfully",
-    userid: newUser.userid,
-    first_name: newUser.first_name,
-    last_name: newUser.last_name,
-    email: newUser.email,
-    phone_number: newUser.phone_number,
-    role: newUser.role,
-    token: generateToken(newUser.userid),
+    userid: user.userid,
+    first_name: user.first_name,
+    last_name: user.last_name,
+    email: user.email,
+    phone_number: user.phone_number,
+    role: user.role,
+    token: generateToken(user.userid),
   });
 });
 
