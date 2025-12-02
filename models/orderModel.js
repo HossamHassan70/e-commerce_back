@@ -4,10 +4,17 @@ const createOrder = async (
   userid,
   //
   items,
-  order_status,
   total_amount,
-  shipping_fee
+  shipping_fee,
+  btnVal
 ) => {
+  let order_status;
+  if (btnVal === "cancelled") {
+    order_status = "cancelled";
+  }
+  if (btnVal === "completed") {
+    order_status = "completed";
+  }
   const result = await pool.query(
     `INSERT INTO orders (userid, order_status, total_amount, shipping_fee)
      VALUES ($1, $2, $3, $4)

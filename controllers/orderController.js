@@ -10,20 +10,19 @@ const {
 } = require("../models/orderModel");
 
 const createNewOrder = asyncHandler(async (req, res) => {
-  const { total_amount, shipping_fee, items } = req.body;
+   const { total_amount, shipping_fee, items, btnVal } = req.body;
 
-  if (!total_amount) {
-    res.status(400);
-    throw new Error("Total amount is required");
-  }
+   if (!total_amount) {
+     res.status(400).json({ msg: "Total amount is required" });
+   }
 
-  const order = await createOrder(
-    req.user.userid,
-    items,
-    "pending",
-    total_amount,
-    shipping_fee || 0
-  );
+   const order = await createOrder(
+     req.user.userid,
+     items,
+     total_amount,
+     shipping_fee || 0,
+     btnVal
+   );
 
   res.status(201).json({ message: "Order created successfully", order });
 });
