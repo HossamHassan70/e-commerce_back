@@ -1,5 +1,4 @@
 const express = require("express");
-const dotenv = require("dotenv");
 const helmet = require("helmet");
 const cors = require("cors");
 const productRouter = require("./routes/productRouter");
@@ -13,7 +12,7 @@ const orderRouter = require("./routes/orderRoutes");
 const requestRouter = require("./routes/requestRouter");
 const initDB = require("./db/initDB");
 const { startCleanupJob } = require("./jobs/cleanupJobs");
-dotenv.config({ path: "./.env" });
+require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT;
