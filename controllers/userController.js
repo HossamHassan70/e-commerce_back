@@ -14,6 +14,7 @@ const {
 } = require("../models/emailModel");
 const { generateVerificationCode } = require("../utils/codeGenerator");
 const { sendVerificationEmail } = require("../utils/emailSender");
+
 const generateToken = (userid) => {
   return jwt.sign({ userid }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
@@ -23,14 +24,12 @@ const registerUser = asyncHandler(async (req, res) => {
     req.body;
 
   if (!first_name || !last_name || !email || !password) {
-    res.status(400);
-    throw new Error("Please fill all required fields");
+    return res.status(400).json({ message: "Please fill all required fields" });
   }
 
   const existingUser = await findUserByEmail(email);
   if (existingUser) {
-    res.status(400);
-    throw new Error("User already exists");
+    return res.status(400).json({ message: "User already exists" });
   }
 
   const salt = await bcrypt.genSalt(10);
@@ -51,7 +50,7 @@ const registerUser = asyncHandler(async (req, res) => {
   await upsertEmailCode(newUser.userid, code, expired_at);
   await sendVerificationEmail(newUser.email, newUser.first_name, code);
 
-  res.status(201).json({
+  return res.status(201).json({
     message:
       "User registered successfully. Please check your email to verify your account.",
     user: {
@@ -63,60 +62,42 @@ const registerUser = asyncHandler(async (req, res) => {
       role: newUser.role,
     },
   });
-  // res.status(201).json({
-  //   message: "User registered successfully",
-  //   user: {
-  //     userid: newUser.userid,
-  //     first_name: newUser.first_name,
-  //     last_name: newUser.last_name,
-  //     email: newUser.email,
-  //     phone_number: newUser.phone_number,
-  //     role: newUser.role,
-  //     token: generateToken(newUser.userid),
-  //   },
-  // });
 });
+
 // ====================== VERIFY EMAIL ======================
 const verifyEmail = asyncHandler(async (req, res) => {
   const { email, code } = req.body;
 
   if (!email || !code) {
-    res.status(400);
-    throw new Error("Email and code are required");
+    return res.status(400).json({ message: "Email and code are required" });
   }
 
   const user = await findUserByEmail(email);
   if (!user) {
-    res.status(404);
-    throw new Error("User not found");
+    return res.status(404).json({ message: "User not found" });
   }
 
   if (user.isverified) {
-    res.status(400);
-    throw new Error("User already verified");
+    return res.status(400).json({ message: "User already verified" });
   }
 
   const emailRecord = await getEmailCodeByUserId(user.userid);
   if (!emailRecord) {
-    res.status(400);
-    throw new Error("Verification record not found");
+    return res.status(400).json({ message: "Verification record not found" });
   }
 
   if (emailRecord.code !== code) {
-    res.status(400);
-    throw new Error("Invalid code");
+    return res.status(400).json({ message: "Invalid code" });
   }
 
   if (new Date(emailRecord.expired_at) < new Date()) {
-    res.status(400);
-    throw new Error("Code has expired");
+    return res.status(400).json({ message: "Code has expired" });
   }
 
   await verifyUserEmail(user.userid);
   await deleteEmailCode(user.userid);
 
-  // res.status(200).json({ message: "Email verified successfully" });
-  res.status(200).json({
+  return res.status(200).json({
     message: "Email verified successfully",
     user: {
       userid: user.userid,
@@ -136,13 +117,11 @@ const resendVerificationCode = asyncHandler(async (req, res) => {
 
   const user = await findUserByEmail(email);
   if (!user) {
-    res.status(404);
-    throw new Error("User not found");
+    return res.status(404).json({ message: "User not found" });
   }
 
   if (user.isverified) {
-    res.status(400);
-    throw new Error("User already verified");
+    return res.status(400).json({ message: "User already verified" });
   }
 
   const code = generateVerificationCode();
@@ -151,7 +130,7 @@ const resendVerificationCode = asyncHandler(async (req, res) => {
   await upsertEmailCode(user.userid, code, expired_at);
   await sendVerificationEmail(user.email, user.first_name, code);
 
-  res.status(200).json({
+  return res.status(200).json({
     message: "Verification code resent successfully",
     userid: user.userid,
     first_name: user.first_name,
@@ -163,32 +142,31 @@ const resendVerificationCode = asyncHandler(async (req, res) => {
   });
 });
 
+// ====================== LOGIN ======================
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  // IF USER DOES NOT WRITE (email/password) IN INPUT FIELDS
+
   if (!email || !password) {
-    res.status(400);
-    throw new Error("Invalid email or password");
+    return res.status(400).json({ message: "Invalid email or password" });
   }
 
-  // IF USER DOES EXIST
   const user = await findUserByEmail(email);
   if (!user) {
-    res.status(400);
-    throw new Error("User Does not Exist, Please Signup");
-  }
-  // console.log("User verification status:", user.isverified);
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    res.status(400);
-    throw new Error("Invalid email or password");
-  }
-  if (!user.isverified) {
-    res.status(400);
-    throw new Error("User Does not Verified");
+    return res
+      .status(400)
+      .json({ message: "User Does not Exist, Please Signup" });
   }
 
-  res.json({
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return res.status(400).json({ message: "Invalid email or password" });
+  }
+
+  if (!user.isverified) {
+    return res.status(400).json({ message: "User Does not Verified" });
+  }
+
+  return res.json({
     message: "Login successful",
     user: {
       userid: user.userid,
@@ -202,29 +180,28 @@ const loginUser = asyncHandler(async (req, res) => {
   });
 });
 
+// ====================== PROFILE ======================
 const getUserProfile = asyncHandler(async (req, res) => {
   if (!req.user) {
-    res.status(401);
-    throw new Error("User not authorized");
+    return res.status(401).json({ message: "User not authorized" });
   }
 
-  res.json({
+  return res.json({
     message: "User profile retrieved successfully",
     user: req.user,
   });
 });
 
+// ====================== GET ALL USERS (ADMIN) ======================
 const getAll = asyncHandler(async (req, res) => {
   if (req.user.role !== "admin") {
-    res.status(401);
-    throw new Error("User is not authorized");
+    return res.status(401).json({ message: "User is not authorized" });
   }
 
   const users = await getAllUsers();
-  res.json({
-    users,
-  });
+  return res.json({ users });
 });
+
 module.exports = {
   registerUser,
   loginUser,

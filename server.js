@@ -36,7 +36,7 @@ app.use("/api/orders", orderRouter);
 app.use("/api/requests", requestRouter);
 
 app.listen(port, () => {
-  console.log("server running port 3000");
+  console.log("server running port 3000", port);
   startCleanupJob();
   console.log("Cleanup job scheduled to run daily at midnight");
 });
