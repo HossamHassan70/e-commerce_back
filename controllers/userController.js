@@ -207,7 +207,7 @@ const getAll = asyncHandler(async (req, res) => {
 // =====================
 const updateUserById = async (req, res) => {
   try {
-    const { userid } = req.params;
+    const { userid } = req.params.userid;
     const { first_name, last_name, email, phone_number, role } = req.body;
 
     const result = await pool.query(
@@ -240,7 +240,7 @@ const updateUserById = async (req, res) => {
 // =====================
 const deleteUserById = async (req, res) => {
   try {
-    const { userid } = req.params;
+    const { userid } = req.params.userid;
 
     const result = await pool.query(
       `DELETE FROM users WHERE userid = $1 RETURNING userid`,
