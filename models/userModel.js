@@ -51,7 +51,7 @@ const deleteUnverifiedExpiredUsers = async () => {
     `DELETE FROM users
      WHERE isVerified = false
      AND userid IN (
-       SELECT userid FROM email_verification
+       SELECT userid FROM emails
        WHERE expired_at < NOW() - INTERVAL '1 hour'
      )
      RETURNING userid, email`
@@ -64,5 +64,5 @@ module.exports = {
   findUserByEmail,
   verifyUserEmail,
   getAllUsers,
-  deleteUnverifiedExpiredUsers
+  deleteUnverifiedExpiredUsers,
 };
