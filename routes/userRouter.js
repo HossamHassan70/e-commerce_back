@@ -7,6 +7,8 @@ const {
   verifyEmail,
   resendVerificationCode,
   getAll,
+  updateUserById,
+  deleteUserById,
 } = require("../controllers/userController");
 const { protect, allowedTo } = require("../middleware/authMiddleware");
 const contactController = require("../controllers/contactUsController");
@@ -35,19 +37,9 @@ const contactController = require("../controllers/contactUsController");
 //  *       201:
 //  *         description: User registered successfully
 //  */
-router.put(
-  "/:userid",
-  protect,
-  allowedTo("admin"),
-  userController.updateUserById
-);
+router.put("/:userid", protect, allowedTo("admin"), updateUserById);
 
-router.delete(
-  "/:userid",
-  protect,
-  allowedTo("admin"),
-  userController.deleteUserById
-);
+router.delete("/:userid", protect, allowedTo("admin"), deleteUserById);
 
 router.post("/register", registerUser);
 // /**
