@@ -210,6 +210,12 @@ const updateUserById = async (req, res) => {
     const { userid } = req.params.userid;
     const { first_name, last_name, email, phone_number, role } = req.body;
 
+    if (req.user.role !== "admin" && req.user.userid != req.params.userid) {
+      return res
+        .status(403)
+        .json({ message: "You cannot update another user" });
+    }
+
     const result = await pool.query(
       `UPDATE users
        SET first_name = $1,
@@ -241,6 +247,12 @@ const updateUserById = async (req, res) => {
 const deleteUserById = async (req, res) => {
   try {
     const { userid } = req.params.userid;
+
+    if (req.user.role !== "admin" && req.user.userid != req.params.userid) {
+      return res
+        .status(403)
+        .json({ message: "You cannot update another user" });
+    }
 
     const result = await pool.query(
       `DELETE FROM users WHERE userid = $1 RETURNING userid`,
