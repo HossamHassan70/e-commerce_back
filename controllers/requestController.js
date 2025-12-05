@@ -6,7 +6,7 @@ const asyncHandler = require("express-async-handler");
 // @access  Buyer
 exports.sendSellerReq = asyncHandler(async (req, res) => {
   const userid = req.user.userid;
-  const { role, brand_name, payload } = req.body;
+  const { role, brand_name, payload, phone_number } = req.body;
   if (!role) {
     res.status(400).json({ message: "Role is required" });
   }
@@ -23,8 +23,8 @@ exports.sendSellerReq = asyncHandler(async (req, res) => {
   }
 
   const { rows } = await db.query(
-    `INSERT INTO role_change_requests(userid, role, brand_name, payload) VALUES ($1, $2, $3, $4) RETURNING *`,
-    [userid, role, brand_name, payload]
+    `INSERT INTO role_change_requests(userid, role, brand_name, payload) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+    [userid, role, brand_name, payload, phone_number]
   );
 
   const userResult = await db.query(
