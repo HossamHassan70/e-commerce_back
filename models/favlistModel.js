@@ -3,8 +3,12 @@ const db = require("../db/pool");
 class FavList {
   //@desc GET LIST
   static async get(userid) {
-    return (await db.query(`SELECT * FROM favlist WHERE userid = $1`, [userid]))
-      .rows;
+    return (
+      await db.query(
+        `SELECT p* FROM favlist f INNER JOIN product p ON f.productid = p.productid WHERE userid = $1`,
+        [userid]
+      )
+    ).rows;
   }
 
   //@desc ADD PRODUCT
@@ -14,9 +18,7 @@ class FavList {
       [userid, productid]
     );
     if (productExistInCart.rows.length > 0) {
-       res
-      .status(400)
-         .json({ message: "Product Already Exists In List" });
+      res.status(400).json({ message: "Product Already Exists In List" });
     } else {
       return (
         await db.query(
@@ -38,7 +40,7 @@ class FavList {
   //@desc EMPTY LIST
   static async empty(userid) {
     return await db.query(`DELETE FROM favlist WHERE userid = $1 RETURNING *`, [
-      userid
+      userid,
     ]);
   }
 }
