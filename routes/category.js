@@ -5,7 +5,7 @@ const authController = require("../middleware/authMiddleware");
 const router = express.Router();
 
 // ADD PERMISSIONS
-//router.use(authController.protect);
+router.use(authController.protect);
 
 // ➕ Add a new category
 router.post("/", authController.allowedTo("admin"), async (req, res) => {

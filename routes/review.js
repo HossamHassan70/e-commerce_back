@@ -5,7 +5,7 @@ const pool = require("../db/pool");
 const authController = require("../middleware/authMiddleware");
 
 // ADD PERMISSIONS
-router.use(authController.protect);
+//router.use(authController.protect);
 
 // get all reviews
 router.get("/", authController.allowedTo("admin"), async (req, res) => {
@@ -13,6 +13,24 @@ router.get("/", authController.allowedTo("admin"), async (req, res) => {
     const result = await pool.query(
       "SELECT * FROM review ORDER BY created_at DESC"
     );
+    res.status(200).json(result.rows);
+  } catch (err) {
+    console.error("Error fetching reviews:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// get all reviews For User
+router.get("/UserReviews", authController.protect, async (req, res) => {
+  try {
+    const userid = req.user.userid;
+    const result = await pool.query(
+      "SELECT * FROM review WHERE userid = $1 ORDER BY created_at DESC",
+      [userid]
+    );
+    if (!result) {
+      res.status(200).json({ msg: "No Reviews For this User" });
+    }
     res.status(200).json(result.rows);
   } catch (err) {
     console.error("Error fetching reviews:", err);
@@ -43,7 +61,7 @@ router.get("/:productid", async (req, res) => {
 });
 
 // add new review
-router.post("/", async (req, res) => {
+router.post("/", authController.protect, async (req, res) => {
   try {
     const userid = req.user.userid;
     const { productid, review, rating } = req.body;
@@ -91,7 +109,7 @@ router.post("/", async (req, res) => {
 });
 
 //  update review by userid + productid
-router.put("/:reviewid", async (req, res) => {
+router.put("/:reviewid", authController.protect, async (req, res) => {
   try {
     const userid = req.user.userid;
     const { reviewid } = req.params;
@@ -141,6 +159,7 @@ router.put("/:reviewid", async (req, res) => {
 // delete review by userid + productid
 router.delete(
   "/:reviewid",
+  authController.protect,
   authController.allowedTo("admin", "buyer", "seller"),
   async (req, res) => {
     try {
