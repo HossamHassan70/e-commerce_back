@@ -5,6 +5,7 @@ const FavList = require("../models/favlistModel");
 // @route   GET  /api/favlist
 // @access  Buyer/Seller
 exports.getList = asyncHandler(async (req, res, next) => {
+  //console.log(req.user);
   const userid = req.user.userid;
   const list = await FavList.get(userid);
 
