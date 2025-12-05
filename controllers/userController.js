@@ -225,7 +225,67 @@ const getAll = asyncHandler(async (req, res) => {
     users,
   });
 });
+
+// =====================
+// UPDATE USER BY ID
+// =====================
+const updateUserById = async (req, res) => {
+  try {
+    const { userid } = req.params;
+    const { first_name, last_name, email, phone_number, role } = req.body;
+
+    const result = await pool.query(
+      `UPDATE users
+       SET first_name = $1,
+           last_name = $2,
+           email = $3,
+           phone_number = $4,
+           role = $5
+       WHERE userid = $6
+       RETURNING userid, first_name, last_name, email, phone_number, role, created_at`,
+      [first_name, last_name, email, phone_number, role, userid]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.status(200).json({
+      message: "User updated successfully.",
+      user: result.rows[0],
+    });
+  } catch (err) {
+    console.error("Error updating user:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+// =====================
+// DELETE USER BY ID
+// =====================
+const deleteUserById = async (req, res) => {
+  try {
+    const { userid } = req.params;
+
+    const result = await pool.query(
+      `DELETE FROM users WHERE userid = $1 RETURNING userid`,
+      [userid]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.status(200).json({ message: "User deleted successfully." });
+  } catch (err) {
+    console.error("Error deleting user:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 module.exports = {
+  updateUserById,
+  deleteUserById,
   registerUser,
   loginUser,
   getUserProfile,

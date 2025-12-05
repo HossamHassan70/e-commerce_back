@@ -35,6 +35,20 @@ const contactController = require("../controllers/contactUsController");
 //  *       201:
 //  *         description: User registered successfully
 //  */
+router.put(
+  "/:userid",
+  authController.protect,
+  authController.allowedTo("admin"),
+  userController.updateUserById
+);
+
+router.delete(
+  "/:userid",
+  authController.protect,
+  authController.allowedTo("admin"),
+  userController.deleteUserById
+);
+
 router.post("/register", registerUser);
 // /**
 //  * @swagger
