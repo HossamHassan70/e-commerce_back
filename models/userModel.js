@@ -58,11 +58,41 @@ const deleteUnverifiedExpiredUsers = async () => {
   );
   return result.rows;
 };
+const updateUser = async (
+  first_name,
+  last_name,
+  email,
+  phone_number,
+  role,
+  userid
+) => {
+  const result = await pool.query(
+    `UPDATE users
+       SET first_name = $1,
+           last_name = $2,
+           email = $3,
+           phone_number = $4,
+           role = $5
+       WHERE userid = $6
+       RETURNING userid, first_name, last_name, email, phone_number, role, created_at`,
+    [first_name, last_name, email, phone_number, role, userid]
+  );
+  return result.rows;
+};
 
+const deleteUser = async (userid) => {
+  const result = await pool.query(
+    `DELETE FROM users WHERE userid = $1 RETURNING userid`,
+    [userid]
+  );
+  return result;
+};
 module.exports = {
   createUser,
   findUserByEmail,
   verifyUserEmail,
   getAllUsers,
   deleteUnverifiedExpiredUsers,
+  updateUser,
+  deleteUser,
 };
