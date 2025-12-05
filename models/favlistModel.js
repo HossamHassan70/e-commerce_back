@@ -5,7 +5,7 @@ class FavList {
   static async get(userid) {
     return (
       await db.query(
-        `SELECT p* FROM favlist f INNER JOIN product p ON f.productid = p.productid WHERE userid = $1`,
+        `SELECT p.* FROM favlist f INNER JOIN product p ON f.productid = p.productid WHERE userid = $1`,
         [userid]
       )
     ).rows;
