@@ -37,15 +37,15 @@ const contactController = require("../controllers/contactUsController");
 //  */
 router.put(
   "/:userid",
-  authController.protect,
-  authController.allowedTo("admin"),
+  protect,
+  allowedTo("admin"),
   userController.updateUserById
 );
 
 router.delete(
   "/:userid",
-  authController.protect,
-  authController.allowedTo("admin"),
+  protect,
+  allowedTo("admin"),
   userController.deleteUserById
 );
 
