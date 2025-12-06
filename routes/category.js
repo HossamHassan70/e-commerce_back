@@ -9,11 +9,11 @@ router.use(authController.protect);
 // ➕ Add new category (admin only)
 router.post("/", authController.allowedTo("admin"), async (req, res) => {
   try {
-    const { name, image } = req.body;
+    const { name, img } = req.body;
 
     const result = await pool.query(
-      "INSERT INTO category (name, image) VALUES ($1, $2) RETURNING *",
-      [name, image]
+      "INSERT INTO category (name, img) VALUES ($1, $2) RETURNING *",
+      [name, img]
     );
 
     res.status(200).json({
