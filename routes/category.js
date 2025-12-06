@@ -12,7 +12,7 @@ router.post("/", authController.allowedTo("admin"), async (req, res) => {
     const { name, img } = req.body;
 
     const result = await pool.query(
-      "INSERT INTO category (name, img) VALUES ($1, $2) RETURNING *",
+      "INSERT INTO category (name, img) VALUES ($1, $2::text[]) RETURNING *",
       [name, img]
     );
 
@@ -21,7 +21,7 @@ router.post("/", authController.allowedTo("admin"), async (req, res) => {
       category: result.rows[0],
     });
   } catch (err) {
-    console.error("Error adding category:", err);
+    console.error("Error adding category:", err.message);
     res.status(500).json({ error: "Server error" });
   }
 });
