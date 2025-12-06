@@ -38,13 +38,13 @@ const contactController = require("../controllers/contactUsController");
 //  *       201:
 //  *         description: User registered successfully
 //  */
-router.get("/:userid", protect, allowedTo("admin"), getUserById);
+// router.get("/:userid", protect, allowedTo("admin"), getUserById);
 
-router.put("/:userid", protect, allowedTo("admin"), updateUserById);
+// router.put("/:userid", protect, allowedTo("admin"), updateUserById);
 
-router.delete("/:userid", protect, allowedTo("admin"), deleteUserById);
+// router.delete("/:userid", protect, allowedTo("admin"), deleteUserById);
 
-router.post("/register", registerUser);
+// router.post("/register", registerUser);
 // /**
 //  * @swagger
 //  */
@@ -56,9 +56,16 @@ router.post("/resend", resendVerificationCode);
 // ADD CONTACT ROUTE HERE
 router.post("/contact", contactController.sendMessage);
 
+// ADMIN ROUTES
 router.use(protect);
 router.use(allowedTo("admin"));
-router.get("/contact", contactController.getMsg);
+
 router.get("/view-users", getAll);
+router.get("/contact", contactController.getMsg);
+
+// Now dynamic ID routes LAST
+router.get("/:userid", getUserById);
+router.put("/:userid", updateUserById);
+router.delete("/:userid", deleteUserById);
 
 module.exports = router;
