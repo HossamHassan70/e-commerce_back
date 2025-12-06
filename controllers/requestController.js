@@ -39,7 +39,9 @@ exports.sendSellerReq = asyncHandler(async (req, res) => {
 // @access  Admin
 exports.getSellerReq = asyncHandler(async (req, res) => {
   if (req.user.role != "admin") {
-    return res.status(401).json({ message: "User is Not Authorized For this Action" });
+    return res
+      .status(401)
+      .json({ message: "User is Not Authorized For this Action" });
   }
   const requests = await db.query(
     `SELECT r.role, r.brand_name, r.role, r.payload, u.first_name, u.last_name, u.email, u.phone_number
@@ -52,26 +54,41 @@ exports.getSellerReq = asyncHandler(async (req, res) => {
 // @route   POST  /api/requests/:id
 // @access  Admin
 exports.processDecision = asyncHandler(async (req, res) => {
-  if (req.user.role != "admin") {
-    return res.status(401).json({ message: "User is Not Authorized For this Action" });
+  if (req.user.role !== "admin") {
+    return res
+      .status(401)
+      .json({ message: "User is Not Authorized For this Action" });
   }
-  // const reqId = req.params.id;
+
   const { role, userid } = req.body;
-  if (!role) {
-    return res.status(400).json({ message: "Role is required" });
+
+  if (!role || !userid) {
+    return res.status(400).json({ message: "Role and UserID are required" });
   }
 
   if (role === "seller") {
     await db.query(`UPDATE users SET role = 'seller' WHERE userid = $1`, [
       userid,
     ]);
+
+    await db.query(`DELETE FROM role_change_requests WHERE userid = $1`, [
+      userid,
+    ]);
+
     return res.status(200).json({ message: "User upgraded to Seller" });
   }
 
   if (role === "buyer") {
-    await db.query(`UPDATE users SET role = "buyer" WHERE userid = $1`, [
+    await db.query(`UPDATE users SET role = 'buyer' WHERE userid = $1`, [
       userid,
     ]);
+
+    await db.query(`DELETE FROM role_change_requests WHERE userid = $1`, [
+      userid,
+    ]);
+
     return res.status(200).json({ message: "User demoted to Buyer" });
   }
+
+  return res.status(400).json({ message: "Invalid role value" });
 });
