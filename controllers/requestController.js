@@ -23,7 +23,7 @@ exports.sendSellerReq = asyncHandler(async (req, res) => {
   }
 
   const { rows } = await db.query(
-    `INSERT INTO role_change_requests(userid, role, brand_name, payload) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+    `INSERT INTO role_change_requests(userid, role, brand_name, payload, phone_number) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
     [userid, role, brand_name, payload, phone_number]
   );
 
@@ -68,7 +68,7 @@ exports.processDecision = asyncHandler(async (req, res) => {
     return res.status(200).json({ message: "User upgraded to Seller" });
   }
 
-  if (role === "Buyer") {
+  if (role === "buyer") {
     await db.query(`UPDATE users SET role = "buyer" WHERE userid = $1`, [
       userid,
     ]);
