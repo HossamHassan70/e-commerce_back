@@ -50,7 +50,7 @@ router.put(
       const { name, image } = req.body;
 
       const result = await pool.query(
-        "UPDATE category SET name = $1 AND image = $2 WHERE categoryid = $3 RETURNING *",
+        "UPDATE category SET name = $1 AND img = $2 WHERE categoryid = $3 RETURNING *",
         [name, image, categoryid]
       );
 
