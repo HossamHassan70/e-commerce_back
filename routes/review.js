@@ -7,18 +7,23 @@ const authController = require("../middleware/authMiddleware");
 // ADD PERMISSIONS
 //router.use(authController.protect);
 
-// get all reviews
-router.get("/", authController.allowedTo("admin"), async (req, res) => {
-  try {
-    const result = await pool.query(
-      "SELECT * FROM review ORDER BY created_at DESC"
-    );
-    res.status(200).json(result.rows);
-  } catch (err) {
-    console.error("Error fetching reviews:", err);
-    res.status(500).json({ error: "Server error" });
+// get all reviews for Admin
+router.get(
+  "/",
+  authController.protect,
+  authController.allowedTo("admin"),
+  async (req, res) => {
+    try {
+      const result = await pool.query(
+        "SELECT * FROM review ORDER BY created_at DESC"
+      );
+      res.status(200).json(result.rows);
+    } catch (err) {
+      console.error("Error fetching reviews:", err);
+      res.status(500).json({ error: "Server error" });
+    }
   }
-});
+);
 
 // get all reviews For User
 router.get("/UserReviews", authController.protect, async (req, res) => {
