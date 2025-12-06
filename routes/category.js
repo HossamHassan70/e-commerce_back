@@ -41,18 +41,46 @@ router.get("/", async (req, res) => {
 });
 
 // ✏️ Update category name
-router.put(
+router.patch(
   "/:categoryid",
   authController.allowedTo("admin"),
   async (req, res) => {
     try {
       const { categoryid } = req.params;
-      const { name, image } = req.body; // <-- image should match your schema (img)
+      const { name, img } = req.body; // img = array (TEXT[])
 
-      const result = await pool.query(
-        "UPDATE category SET name = $1, img = $2 WHERE categoryid = $3 RETURNING *",
-        [name, image, categoryid]
-      );
+      // Collect dynamic fields
+      const updates = [];
+      const values = [];
+      let index = 1;
+
+      if (name !== undefined) {
+        updates.push(`name = $${index}`);
+        values.push(name);
+        index++;
+      }
+
+      if (img !== undefined) {
+        updates.push(`img = $${index}`);
+        values.push(img);
+        index++;
+      }
+
+      // No fields provided
+      if (updates.length === 0) {
+        return res.status(400).json({ message: "No fields to update." });
+      }
+
+      // Final query
+      const query = `
+        UPDATE category
+        SET ${updates.join(", ")}
+        WHERE categoryid = $${index}
+        RETURNING *
+      `;
+      values.push(categoryid);
+
+      const result = await pool.query(query, values);
 
       if (result.rows.length === 0) {
         return res.status(404).json({ message: "Category not found." });
