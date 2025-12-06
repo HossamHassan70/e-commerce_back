@@ -58,26 +58,59 @@ const deleteUnverifiedExpiredUsers = async () => {
   );
   return result.rows;
 };
-const updateUser = async (
+const updateUser = async ({
+  userid,
   first_name,
   last_name,
   email,
   phone_number,
   role,
-  userid
-) => {
-  const result = await pool.query(
-    `UPDATE users
-       SET first_name = $1,
-           last_name = $2,
-           email = $3,
-           phone_number = $4,
-           role = $5
-       WHERE userid = $6
-       RETURNING userid, first_name, last_name, email, phone_number, role, created_at`,
-    [first_name, last_name, email, phone_number, role, userid]
-  );
+}) => {
+  const fields = [];
+  const values = [];
+  let i = 1;
+
+  if (first_name !== undefined) {
+    fields.push(`first_name = $${i++}`);
+    values.push(first_name);
+  }
+  if (last_name !== undefined) {
+    fields.push(`last_name = $${i++}`);
+    values.push(last_name);
+  }
+  if (email !== undefined) {
+    fields.push(`email = $${i++}`);
+    values.push(email);
+  }
+  if (phone_number !== undefined) {
+    fields.push(`phone_number = $${i++}`);
+    values.push(phone_number);
+  }
+  if (role !== undefined) {
+    fields.push(`role = $${i++}`);
+    values.push(role);
+  }
+
+  if (fields.length === 0) return [];
+
+  values.push(userid);
+
+  const query = `
+    UPDATE users
+    SET ${fields.join(", ")}
+    WHERE userid = $${i}
+    RETURNING userid, first_name, last_name, email, phone_number, role, created_at
+  `;
+
+  const result = await pool.query(query, values);
   return result.rows;
+};
+
+const getOneUser = async (userid) => {
+  const { rows } = await pool.query(`SELECT * FROM users WHERE userid = $1`, [
+    userid,
+  ]);
+  return rows[0];
 };
 
 const deleteUser = async (userid) => {
@@ -95,4 +128,5 @@ module.exports = {
   deleteUnverifiedExpiredUsers,
   updateUser,
   deleteUser,
+  getOneUser,
 };

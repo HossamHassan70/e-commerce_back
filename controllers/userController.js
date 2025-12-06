@@ -8,6 +8,7 @@ const {
   getAllUsers,
   updateUser,
   deleteUser,
+  getOneUser,
 } = require("../models/userModel");
 const {
   upsertEmailCode,
@@ -204,23 +205,34 @@ const getAll = asyncHandler(async (req, res) => {
   return res.json({ users });
 });
 
+const getUserById = asyncHandler(async (req, res) => {
+  const userid = req.params.userid;
+  const result = await getOneUser(userid);
+  if (!result) {
+    res.status(404).json({ msg: "No User Exist With this ID" });
+  }
+  res.status(200).json({
+    user: result,
+  });
+});
+
 const updateUserById = asyncHandler(async (req, res) => {
   const userid = req.params.userid;
   const { first_name, last_name, email, phone_number, role } = req.body;
 
-  if (req.user.role !== "admin") {
-    return res.status(403).json({ message: "You cannot update another user" });
-  }
-  const result = await updateUser(
+  const result = await updateUser({
+    userid,
     first_name,
     last_name,
     email,
     phone_number,
     role,
-    userid
-  );
+  });
+
   if (result.length === 0) {
-    return res.status(404).json({ message: "User not found." });
+    return res
+      .status(404)
+      .json({ message: "User not found or no fields to update." });
   }
 
   res.status(200).json({
@@ -228,6 +240,7 @@ const updateUserById = asyncHandler(async (req, res) => {
     user: result[0],
   });
 });
+
 const deleteUserById = asyncHandler(async (req, res) => {
   const userid = req.params.userid;
 
@@ -242,10 +255,10 @@ const deleteUserById = asyncHandler(async (req, res) => {
 
   res.status(200).json({ message: "User deleted successfully." });
 });
-
 module.exports = {
   updateUserById,
   deleteUserById,
+  getUserById,
   registerUser,
   loginUser,
   getUserProfile,
