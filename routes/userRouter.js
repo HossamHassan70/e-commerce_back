@@ -65,7 +65,7 @@ router.get("/contact", contactController.getMsg);
 
 // Now dynamic ID routes LAST
 router.get("/:userid", getUserById);
-router.put("/:userid", updateUserById);
+router.patch("/:userid", updateUserById);
 router.delete("/:userid", deleteUserById);
 
 module.exports = router;

@@ -17,7 +17,7 @@ exports.sendSellerReq = asyncHandler(async (req, res) => {
   );
 
   if (checkUserRole.rows[0]?.role === "seller") {
-    res
+    return res
       .status(400)
       .json({ message: "Request Is Invalid, User Already A Seller" });
   }
@@ -39,7 +39,7 @@ exports.sendSellerReq = asyncHandler(async (req, res) => {
 // @access  Admin
 exports.getSellerReq = asyncHandler(async (req, res) => {
   if (req.user.role != "admin") {
-    res.status(401).json({ message: "User is Not Authorized For this Action" });
+    return res.status(401).json({ message: "User is Not Authorized For this Action" });
   }
   const requests = await db.query(
     `SELECT r.role, r.brand_name, r.role, r.payload, u.first_name, u.last_name, u.email, u.phone_number
@@ -53,7 +53,7 @@ exports.getSellerReq = asyncHandler(async (req, res) => {
 // @access  Admin
 exports.processDecision = asyncHandler(async (req, res) => {
   if (req.user.role != "admin") {
-    res.status(401).json({ message: "User is Not Authorized For this Action" });
+    return res.status(401).json({ message: "User is Not Authorized For this Action" });
   }
   // const reqId = req.params.id;
   const { role, userid } = req.body;
