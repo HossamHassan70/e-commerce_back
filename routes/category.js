@@ -63,7 +63,7 @@ router.patch(
   async (req, res) => {
     try {
       const { categoryid } = req.params;
-      const { name, image } = req.body;
+      const { name, img } = req.body;
 
       const updates = [];
       const values = [];
@@ -75,9 +75,9 @@ router.patch(
         index++;
       }
 
-      if (image !== undefined) {
-        updates.push(`image = $${index}`);
-        values.push(image);
+      if (img !== undefined) {
+        updates.push(`img = $${index}`);
+        values.push(img);
         index++;
       }
 
