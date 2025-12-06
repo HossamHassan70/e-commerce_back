@@ -47,10 +47,10 @@ router.put(
   async (req, res) => {
     try {
       const { categoryid } = req.params;
-      const { name, image } = req.body;
+      const { name, image } = req.body; // <-- image should match your schema (img)
 
       const result = await pool.query(
-        "UPDATE category SET name = $1 AND img = $2 WHERE categoryid = $3 RETURNING *",
+        "UPDATE category SET name = $1, img = $2 WHERE categoryid = $3 RETURNING *",
         [name, image, categoryid]
       );
 
