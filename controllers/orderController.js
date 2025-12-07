@@ -95,6 +95,41 @@ const deleteOrderById = asyncHandler(async (req, res) => {
   return res.status(200).json({ message: "Order deleted successfully" });
 });
 
+//SELLER GET ORDERS MADE FOR HIS PRODUCTS
+const getSellerOrders = asyncHandler(async (req, res) => {
+  if (req.user.role !== "seller") {
+    return res
+      .status(403)
+      .json({ message: "Access denied: only sellers can view their orders" });
+  }
+
+  const sellerId = req.user.userid;
+
+  try {
+    const result = await pool.query(
+      `SELECT o.orderid, o.userid AS buyerid, o.order_status, o.total_amount, o.shipping_fee, o.created_at,
+              i.productid, i.quantity, i.subtotal, p.name AS product_name, p.img AS product_img
+       FROM orders o
+       JOIN order_items i ON o.orderid = i.orderid
+       JOIN product p ON i.productid = p.productid
+       WHERE p.sellerid = $1
+       ORDER BY o.created_at DESC`,
+      [sellerId]
+    );
+
+    if (!result.rows.length) {
+      return res
+        .status(200)
+        .json({ message: "No orders found for this seller" });
+    }
+
+    return res.status(200).json(result.rows);
+  } catch (err) {
+    console.error("Error fetching seller orders:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
 module.exports = {
   createNewOrder,
   getOrders,
@@ -102,4 +137,5 @@ module.exports = {
   changeStatus,
   deleteOrderById,
   getOrderItems,
+  getSellerOrders,
 };
