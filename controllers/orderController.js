@@ -107,12 +107,22 @@ const getSellerOrders = asyncHandler(async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT o.orderid, o.userid AS buyerid, o.order_status, o.total_amount, o.shipping_fee, o.created_at,
-              i.productid, i.quantity, i.subtotal, p.name AS product_name, p.img AS product_img
+      `SELECT 
+          o.orderid, 
+          o.userid AS buyerid, 
+          o.order_status, 
+          o.total_amount, 
+          o.shipping_fee, 
+          o.created_at,
+          i.productid, 
+          i.quantity, 
+          i.subtotal, 
+          p.title AS product_name, 
+          p.img AS product_img
        FROM orders o
        JOIN order_items i ON o.orderid = i.orderid
        JOIN product p ON i.productid = p.productid
-       WHERE p.sellerid = $1
+       WHERE p.userid = $1
        ORDER BY o.created_at DESC`,
       [sellerId]
     );
@@ -125,10 +135,13 @@ const getSellerOrders = asyncHandler(async (req, res) => {
 
     return res.status(200).json(result.rows);
   } catch (err) {
-    console.error("Error fetching seller orders:", err);
-    return res.status(500).json({ message: "Server error" });
+    console.error("Error fetching seller orders:", err.message, err.stack);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: err.message });
   }
 });
+
 
 module.exports = {
   createNewOrder,
