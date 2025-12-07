@@ -25,6 +25,37 @@ router.get(
   }
 );
 
+//get reviews for seller products
+router.get("/SellerReviews", authController.protect, async (req, res) => {
+  const userid = req.user.userid;
+
+  if (req.user.role !== "seller") {
+    return res
+      .status(401)
+      .json({ msg: "User is Not authorized For this Route" });
+  }
+
+  try {
+    const reviewProducts = await pool.query(
+      "SELECT * FROM review WHERE userid = $1 ORDER BY created_at DESC",
+      [userid]
+    );
+
+    if (!reviewProducts.rows.length) {
+      return res.status(200).json({ msg: "No Reviews For this Seller" });
+    }
+
+    res.status(200).json({
+      status: "success",
+      length: reviewProducts.rows.length,
+      reviewProducts: reviewProducts.rows,
+    });
+  } catch (err) {
+    console.error("Error fetching seller reviews:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 // get all reviews For User
 router.get("/UserReviews", authController.protect, async (req, res) => {
   try {
