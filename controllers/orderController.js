@@ -8,6 +8,7 @@ const {
   changeOrderStatus,
   deleteOrder,
 } = require("../models/orderModel");
+const pool = require("../db/pool");
 
 const createNewOrder = asyncHandler(async (req, res) => {
   const { total_amount, shipping_fee, items } = req.body;
@@ -141,7 +142,6 @@ const getSellerOrders = asyncHandler(async (req, res) => {
       .json({ message: "Server error", error: err.message });
   }
 });
-
 
 module.exports = {
   createNewOrder,
