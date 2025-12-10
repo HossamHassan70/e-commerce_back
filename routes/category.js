@@ -4,7 +4,7 @@ const authController = require("../middleware/authMiddleware");
 const router = express.Router();
 
 // Protect all routes except GET
-router.use(authController.protect);
+// router.use(authController.protect);
 
 // ➕ Add new category (admin only)
 router.post("/", authController.allowedTo("admin"), async (req, res) => {

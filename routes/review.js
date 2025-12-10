@@ -56,6 +56,44 @@ router.get("/SellerReviews", authController.protect, async (req, res) => {
   }
 });
 
+router.get("/SellerAllReviews", authController.protect, async (req, res) => {
+  const sellerId = req.user.userid;
+
+  if (req.user.role !== "seller") {
+    return res
+      .status(401)
+      .json({ msg: "You are not authorized to view seller reviews" });
+  }
+
+  try {
+    const reviews = await pool.query(
+      `SELECT r.reviewid, r.review, r.rating, r.created_at,
+              r.userid AS reviewer_id,
+              p.productid, p.title
+       FROM review r
+       JOIN product p ON r.productid = p.productid
+       WHERE p.userid = $1
+       ORDER BY r.created_at DESC`,
+      [sellerId]
+    );
+
+    if (reviews.rows.length === 0) {
+      return res
+        .status(200)
+        .json({ msg: "This seller has no product reviews yet" });
+    }
+
+    res.status(200).json({
+      status: "success",
+      count: reviews.rows.length,
+      reviews: reviews.rows,
+    });
+  } catch (err) {
+    console.error("Error fetching seller product reviews:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 // get all reviews For User
 router.get("/UserReviews", authController.protect, async (req, res) => {
   try {
