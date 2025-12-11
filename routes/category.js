@@ -7,24 +7,29 @@ const router = express.Router();
 // router.use(authController.protect);
 
 // ➕ Add new category (admin only)
-router.post("/", authController.allowedTo("admin"), async (req, res) => {
-  try {
-    const { name, img } = req.body;
+router.post(
+  "/",
+  authController.protect,
+  authController.allowedTo("admin"),
+  async (req, res) => {
+    try {
+      const { name, img } = req.body;
 
-    const result = await pool.query(
-      "INSERT INTO category (name, img) VALUES ($1, $2::text[]) RETURNING *",
-      [name, img]
-    );
+      const result = await pool.query(
+        "INSERT INTO category (name, img) VALUES ($1, $2::text[]) RETURNING *",
+        [name, img]
+      );
 
-    res.status(200).json({
-      message: "Category added successfully.",
-      category: result.rows[0],
-    });
-  } catch (err) {
-    console.error("Error adding category:", err.message);
-    res.status(500).json({ error: "Server error" });
+      res.status(200).json({
+        message: "Category added successfully.",
+        category: result.rows[0],
+      });
+    } catch (err) {
+      console.error("Error adding category:", err.message);
+      res.status(500).json({ error: "Server error" });
+    }
   }
-});
+);
 
 // 🔍 Get all categories
 router.get("/", async (req, res) => {
@@ -59,6 +64,7 @@ router.get("/:categoryid", async (req, res) => {
 // ✏️ Update category (admin only)
 router.patch(
   "/:categoryid",
+  authController.protect,
   authController.allowedTo("admin"),
   async (req, res) => {
     try {
@@ -113,6 +119,7 @@ router.patch(
 // ❌ Delete category
 router.delete(
   "/:categoryid",
+  authController.protect,
   authController.allowedTo("admin"),
   async (req, res) => {
     try {
