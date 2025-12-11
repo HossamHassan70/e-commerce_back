@@ -16,6 +16,13 @@ router.get(
   productController.getSellerProducts
 );
 
+router.get(
+  "/dashboard/products",
+  authController.protect,
+  authController.allowedTo("admin"),
+  productController.getProductsForAdmin
+);
+
 router.post(
   "/",
   authController.protect,
