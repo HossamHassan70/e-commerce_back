@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const productController = require("../controllers/productController");
 const authController = require("../middleware/authMiddleware");
+const multer = require("multer");
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 // --------------------
 // SELLER-PROTECTED ROUTES
