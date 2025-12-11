@@ -44,7 +44,7 @@ exports.getSellerReq = asyncHandler(async (req, res) => {
       .json({ message: "User is Not Authorized For this Action" });
   }
   const requests = await db.query(
-    `SELECT r.role, r.brand_name, r.role, r.payload, u.first_name, u.last_name, u.email, u.phone_number
+    `SELECT r.role, r.brand_name, r.role, r.payload, u.userid, u.first_name, u.last_name, u.email, u.phone_number
         FROM role_change_requests r INNER JOIN users u ON r.userid = u.userid `
   );
   return res.status(201).json(requests.rows);
