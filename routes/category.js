@@ -15,7 +15,7 @@ router.post(
   "/",
   authController.protect,
   authController.allowedTo("admin"),
-  upload.array("images", 5),
+  upload.array("image", 5),
 
   async (req, res) => {
     try {
@@ -76,7 +76,7 @@ router.patch(
   "/:categoryid",
   authController.protect,
   authController.allowedTo("admin"),
-  upload.array("images", 5),
+  upload.array("image", 5),
   async (req, res) => {
     try {
       const { categoryid } = req.params;
