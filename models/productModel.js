@@ -2,7 +2,7 @@ const db = require("../db/pool");
 
 class Product {
   // @desc CREATE PRODUCT
-  static async create(data) {
+  static async create(data, uploadedUrls) {
     const {
       userid,
       categoryid,
@@ -10,7 +10,6 @@ class Product {
       p_description,
       price,
       stock,
-      img,
       availability_status,
       discount_percent,
     } = data;
@@ -27,7 +26,7 @@ class Product {
       p_description,
       price,
       stock,
-      img,
+      uploadedUrls,
       availability_status,
       discount_percent,
     ];
@@ -86,7 +85,7 @@ class Product {
     const { rows } = await db.query(`
           SELECT p.* , u.first_name, u.last_name, u.email
           FROM product p
-          INNER JOIN users u ON p.userid = c.userid`);
+          INNER JOIN users u ON p.userid = u.userid`);
     return rows;
   }
   // @desc GET ONE PRODUCT BY ID

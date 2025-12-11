@@ -1,6 +1,10 @@
 const express = require("express");
 const pool = require("../db/pool");
+const uploadImages = require("../utils/uploadToImageKit");
 const authController = require("../middleware/authMiddleware");
+const multer = require("multer");
+const upload = multer({ storage: multer.memoryStorage() });
+
 const router = express.Router();
 
 // Protect all routes except GET
@@ -11,13 +15,19 @@ router.post(
   "/",
   authController.protect,
   authController.allowedTo("admin"),
+  upload.array("images", 5),
+
   async (req, res) => {
     try {
-      const { name, img } = req.body;
+      const { name } = req.body;
+
+      const uploadedUrls = await uploadImages(req.files, "/categories");
 
       const result = await pool.query(
-        "INSERT INTO category (name, img) VALUES ($1, $2::text[]) RETURNING *",
-        [name, img]
+        `INSERT INTO category (name, img)
+         VALUES ($1, $2::text[])
+         RETURNING *`,
+        [name, uploadedUrls]
       );
 
       res.status(200).json({
@@ -66,24 +76,26 @@ router.patch(
   "/:categoryid",
   authController.protect,
   authController.allowedTo("admin"),
+  upload.array("images", 5),
   async (req, res) => {
     try {
       const { categoryid } = req.params;
-      const { name, img } = req.body;
+      const { name } = req.body;
 
       const updates = [];
       const values = [];
       let index = 1;
 
-      if (name !== undefined) {
+      if (name) {
         updates.push(`name = $${index}`);
         values.push(name);
         index++;
       }
 
-      if (img !== undefined) {
+      if (req.files?.length > 0) {
+        const uploadedUrls = await uploadImages(req.files, "/categories");
         updates.push(`img = $${index}`);
-        values.push(img);
+        values.push(uploadedUrls);
         index++;
       }
 
@@ -91,15 +103,13 @@ router.patch(
         return res.status(400).json({ message: "No fields to update." });
       }
 
-      const query = `
-      UPDATE category
-      SET ${updates.join(", ")}
-      WHERE categoryid = $${index}
-      RETURNING *
-    `;
-      values.push(categoryid);
-
-      const result = await pool.query(query, values);
+      const result = await pool.query(
+        `UPDATE category
+         SET ${updates.join(", ")}
+         WHERE categoryid = $${index}
+         RETURNING *`,
+        [...values, categoryid]
+      );
 
       if (result.rows.length === 0) {
         return res.status(404).json({ message: "Category not found." });

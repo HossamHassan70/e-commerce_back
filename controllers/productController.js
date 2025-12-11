@@ -1,5 +1,6 @@
 const Product = require("../models/productModel");
 const asyncHandler = require("express-async-handler");
+const uploadImages = require("../utils/uploadToImageKit");
 
 // @desc    Get all products
 // @route   GET  /api/products
@@ -72,7 +73,9 @@ exports.getProduct = asyncHandler(async (req, res, next) => {
 // @access  Seller
 exports.createNewProduct = asyncHandler(async (req, res, next) => {
   req.body.userid = req.user.userid;
-  const product = await Product.create(req.body);
+  const uploadedUrls = await uploadImages(req.files, "/products");
+
+  const product = await Product.create(req.body, uploadedUrls);
   res.status(201).json({
     status: "success",
     product,
@@ -82,21 +85,25 @@ exports.createNewProduct = asyncHandler(async (req, res, next) => {
 // @desc    Update product By Id
 // @route   PATCH  /api/products/:id
 // @access  Seller
-exports.updateProduct = asyncHandler(async (req, res, next) => {
+exports.updateProduct = asyncHandler(async (req, res) => {
   const userid = req.user.userid;
   const { id } = req.params;
+
   const product = await Product.findById(id);
-  if (!product) {
-    throw new Error("No Product Found");
+  if (!product) throw new Error("No Product Found");
+
+  if (req.files && req.files.length > 0) {
+    const newImages = await uploadImages(req.files, "/products");
+    req.body.img = newImages;
   }
+
   const updatedProduct = await Product.findByIdAndUpdate(id, userid, req.body);
 
   if (!updatedProduct) {
-    res
-      .status(401)
-      .json({ message: "User is Not Authorized to Update this product" });
+    return res.status(401).json({ message: "Not authorized" });
   }
-  res.status(201).json({
+
+  res.status(200).json({
     status: "success",
     updatedProduct,
   });
