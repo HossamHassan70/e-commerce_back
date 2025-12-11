@@ -119,13 +119,14 @@ class Product {
   }
 
   // @desc DELETE PRODUCT BY ID
-  static async findByIdAndDelete(productId, userid) {
+  static async findByIdAndDelete(productId, userid, role) {
     const statement = `
             DELETE FROM product
-            WHERE productid = $1 AND userid = $2
+            WHERE productid = $1
+            AND ($2 = 'admin' OR userid = $3)
             RETURNING *
         `;
-    const { rows } = await db.query(statement, [productId, userid]);
+    const { rows } = await db.query(statement, [productId, role, userid]);
     return rows[0];
   }
 }

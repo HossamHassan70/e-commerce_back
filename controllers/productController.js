@@ -119,7 +119,11 @@ exports.deleteProduct = asyncHandler(async (req, res, next) => {
   if (!product) {
     throw new Error("No Product Found");
   }
-  const deletedProduct = await Product.findByIdAndDelete(id, userid);
+  const deletedProduct = await Product.findByIdAndDelete(
+    id,
+    userid,
+    req.user.role
+  );
 
   if (!deletedProduct) {
     res
