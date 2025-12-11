@@ -46,7 +46,7 @@ class Product {
     let statement = `
             SELECT p.productid, p.categoryid, p.title, p.p_description, p.price, p.stock, p.img, p.availability_status, p.discount_percent, c.name
             FROM product p
-            FULL JOIN category c ON p.categoryid = c.categoryid
+            INNER JOIN category c ON p.categoryid = c.categoryid
             WHERE 1=1
         `;
     let values = [];
