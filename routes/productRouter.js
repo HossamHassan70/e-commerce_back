@@ -17,6 +17,7 @@ router.post(
   "/",
   authController.protect,
   authController.allowedTo("seller"),
+  upload.array("image", 5),
   productController.createNewProduct
 );
 
@@ -25,6 +26,7 @@ router
   .patch(
     authController.protect,
     authController.allowedTo("seller"),
+    upload.array("image", 5),
     productController.updateProduct
   )
   .delete(

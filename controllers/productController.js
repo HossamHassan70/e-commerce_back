@@ -1,6 +1,8 @@
 const Product = require("../models/productModel");
 const asyncHandler = require("express-async-handler");
 const uploadImages = require("../utils/uploadToImageKit");
+const multer = require("multer");
+const upload = multer({ storage: multer.memoryStorage() });
 
 // @desc    Get all products
 // @route   GET  /api/products
