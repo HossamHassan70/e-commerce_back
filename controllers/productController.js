@@ -75,7 +75,7 @@ exports.createNewProduct = asyncHandler(async (req, res, next) => {
   console.log("BODY:", req.body);
   console.log("FILES:", req.files);
   req.body.userid = req.user.userid;
-  const uploadedUrls = await uploadImages(req.files, "/products");
+  const uploadedUrls = await uploadImages(req.files.image || [], "/products");
 
   const product = await Product.create(req.body, uploadedUrls);
   res.status(201).json({
@@ -93,9 +93,8 @@ exports.updateProduct = asyncHandler(async (req, res) => {
 
   const product = await Product.findById(id);
   if (!product) throw new Error("No Product Found");
-
-  if (req.files && req.files.length > 0) {
-    const newImages = await uploadImages(req.files, "/products");
+  if (req.files && req.files.image && req.files.image.length > 0) {
+    const newImages = await uploadImages(req.files.image, "/products");
     req.body.img = newImages;
   }
 
