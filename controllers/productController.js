@@ -2,7 +2,6 @@ const Product = require("../models/productModel");
 const asyncHandler = require("express-async-handler");
 const uploadImages = require("../utils/uploadToImageKit");
 
-
 // @desc    Get all products
 // @route   GET  /api/products
 // @access  All
