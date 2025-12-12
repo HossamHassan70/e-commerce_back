@@ -72,7 +72,7 @@ exports.getProduct = asyncHandler(async (req, res, next) => {
 // @route   POST  /api/products
 // @access  Seller
 exports.createNewProduct = asyncHandler(async (req, res, next) => {
-  req.body.userid = req.user.userid;
+  const userid = req.user.userid;
   const uploadedUrls = await uploadImages(req.files, "/products");
 
   const product = await Product.create(req.body, uploadedUrls);
